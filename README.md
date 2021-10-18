@@ -8,3 +8,7 @@ census_api_key("67cbcd7b6d617916475eb5bd88439380a2511582")
 v17 <- load_variables(2017, "acs5", cache = TRUE)
 
 View(v17)
+
+
+documentation:
+https://rstudio-pubs-static.s3.amazonaws.com/541247_e7b707cd2f71405bb5624517877785ff.html
