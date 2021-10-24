@@ -15,3 +15,8 @@ https://rstudio-pubs-static.s3.amazonaws.com/541247_e7b707cd2f71405bb56245178777
 
 resource for acs package:
 https://cran.r-project.org/web/packages/acs/readme/README.html
+
+more documentation:
+https://www.census.gov/programs-surveys/acs/guidance/handbooks/general.html
+
+**still working to understand the R package. I think it'll be super useful data it's just massive so once we get this hurdle the rest of the reporting/analysis should be straighforward
