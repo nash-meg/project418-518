@@ -24,3 +24,5 @@ https://www.census.gov/programs-surveys/acs/guidance/handbooks/general.html
 
 
 This Repository could help with the tidycensus package. https://github.com/walkerke/umich-workshop
+
+https://dcl-wrangle.stanford.edu/census.html#census-bureau-basics
