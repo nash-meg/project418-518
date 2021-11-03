@@ -20,3 +20,7 @@ more documentation:
 https://www.census.gov/programs-surveys/acs/guidance/handbooks/general.html
 
 **still working to understand the R package. I think it'll be super useful data it's just massive so once we get this hurdle the rest of the reporting/analysis should be straighforward
+
+
+
+This Repository could help with the tidycensus package. https://github.com/walkerke/umich-workshop
