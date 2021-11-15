@@ -155,3 +155,121 @@ df_acs %>%
   scale_fill_viridis_c(option = "magma")
   
   
+  
+
+
+
+
+variables to use:
+GROUP QUARTERS TYPE (5 TYPES) BY EDUCATIONAL ATTAINMENT
+
+(Or type 3)
+
+Can allow us to compare educational attainment to people in correctional facility (crime rates)
+
+
+
+
+
+HEALTH INSURANCE COVERAGE STATUS AND TYPE BY AGE BY EDUCATIONAL ATTAINMENT
+
+How educational attainment affects healthcare access
+
+
+
+
+
+MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS) BY SEX BY EDUCATIONAL ATTAINMENT
+
+Gives education by income and segments for sex (male/female)
+
+
+
+
+
+PLACE OF BIRTH BY EDUCATIONAL ATTAINMENT IN THE UNITED STATES
+
+Allows us to compare:
+
+-Born in US (live in the same state they were born)
+
+-Born in US (live in different state than where born)
+
+-Born outside US
+
+give education levels for each category
+
+
+
+POVERTY STATUS IN THE PAST 12 MONTHS OF FAMILIES BY HOUSEHOLD TYPE BY EDUCATIONAL ATTAINMENT
+
+
+
+POVERTY STATUS IN THE PAST 12 MONTHS OF INDIVIDUALS BY SEX BY EDUCATIONAL ATTAINMENT
+
+
+
+Both allow to compare:
+
+-People above or equal to federal poverty level (within last 12 months)
+
+-Below fed poverty level in last 12 months
+
+Can get info either by family structures or by sex (male/female)
+
+
+
+
+
+SEX BY AGE BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 18 YEARS AND OVER
+
+Sex by education (all over 18 but breaks down age groups if we wanted to look at old vs younger etc, but probably age isn’t relevant for just “did they graduate HS”) but allows us to compare male/female education levels
+
+
+
+
+
+SEX BY SCHOOL ENROLLMENT BY EDUCATIONAL ATTAINMENT BY EMPLOYMENT STATUS 
+
+Allows us to look at sex by employment/school status
+
+Would allow us to see if they graduated HS and are enrolled in school (meaning continued to college) or just in the workforce
+
+
+
+TENURE BY EDUCATIONAL ATTAINMENT OF HOUSEHOLDER
+
+Homeownership by education (rent or own a home?)
+
+
+
+VETERAN STATUS BY EDUCATIONAL ATTAINMENT FOR THE CIVILIAN POPULATION
+
+Veteran status by education
+
+
+
+EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
+
+Can infer if they are native English speakers and compare education levels (can break down by individual languages or just native English/non)
+
+
+
+CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
+
+Just a count of those older than 18 and what their education level is. Will let us easily get the graduation rates for the entire population.
+
+
+
+
+
+ALLOCATION OF EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER
+
+This one is just "housekeeping" to see how much missing data was allocated
+
+5.71% responses allocated
+
+for reference:
+
+https://www.census.gov/programs-surveys/acs/methodology/sample-size-and-data-quality/item-allocation-rates-definitions.html
+  
