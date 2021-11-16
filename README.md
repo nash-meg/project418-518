@@ -170,34 +170,10 @@ Can allow us to compare educational attainment to people in correctional facilit
 
 
 
-
-HEALTH INSURANCE COVERAGE STATUS AND TYPE BY AGE BY EDUCATIONAL ATTAINMENT
-
-How educational attainment affects healthcare access
-
-
-
-
-
 MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS) BY SEX BY EDUCATIONAL ATTAINMENT
 
 Gives education by income and segments for sex (male/female)
 
-
-
-
-
-PLACE OF BIRTH BY EDUCATIONAL ATTAINMENT IN THE UNITED STATES
-
-Allows us to compare:
-
--Born in US (live in the same state they were born)
-
--Born in US (live in different state than where born)
-
--Born outside US
-
-give education levels for each category
 
 
 
@@ -236,17 +212,10 @@ Allows us to look at sex by employment/school status
 Would allow us to see if they graduated HS and are enrolled in school (meaning continued to college) or just in the workforce
 
 
-
+this one is a maybe
 TENURE BY EDUCATIONAL ATTAINMENT OF HOUSEHOLDER
 
 Homeownership by education (rent or own a home?)
-
-
-
-VETERAN STATUS BY EDUCATIONAL ATTAINMENT FOR THE CIVILIAN POPULATION
-
-Veteran status by education
-
 
 
 EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
@@ -255,12 +224,12 @@ Can infer if they are native English speakers and compare education levels (can 
 
 
 
+
+totals but not used in analysis
+
 CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
 
 Just a count of those older than 18 and what their education level is. Will let us easily get the graduation rates for the entire population.
-
-
-
 
 
 ALLOCATION OF EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER
