@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 library(tidyverse)
 library(tidycensus)
 options(tigris_use_cache = TRUE)
@@ -31,6 +32,7 @@ voting_age_assoc <- ("B29002_006")
 voting_age_bachelor <- ("B29002_007")
 voting_age_graduate <- ("B29002_008")
 
+x
 #SEX BY AGE BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 18 YEARS AND OVER
 voting_age_female_total <- ("B15001_043")
 voting_age_male_total <- ("B15001_002")
@@ -115,3 +117,6 @@ df_acs %>%
   coord_sf(crs = 26911) + 
   scale_fill_viridis_c(option = "magma")
 
+=======
+xxx
+>>>>>>> 9c6c4e7c4fe94a181fe5cc3c57786a3b26897dae
