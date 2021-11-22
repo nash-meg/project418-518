@@ -1,6 +1,7 @@
-<<<<<<< HEAD
 library(tidyverse)
 library(tidycensus)
+library(ggridges)
+library(dplyr)
 options(tigris_use_cache = TRUE)
 
 census_api_key("67cbcd7b6d617916475eb5bd88439380a2511582", install = TRUE)
@@ -9,6 +10,8 @@ readRenviron("~/.Renviron")
 all_vars_acs5 <- 
   load_variables(year = 2019, dataset = "acs5")
 
+
+#just testing
 all_vars_acs5 %>% 
   filter(concept == "EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME FOR THE POPULATION 25 YEARS AND OVER") %>%
   view()
@@ -60,9 +63,6 @@ test <-
     table = 'B27019',
     year = 2019
   )
-
-variables <- (voting_age_total, voting_age_hs_grad,voting_age_hs,voting_age_some_college, voting_age_assoc, 
-              voting_age_bachelor,voting_age_graduate)
 
 test %>% 
   pivot_wider(
@@ -117,6 +117,82 @@ df_acs %>%
   coord_sf(crs = 26911) + 
   scale_fill_viridis_c(option = "magma")
 
-=======
-xxx
->>>>>>> 9c6c4e7c4fe94a181fe5cc3c57786a3b26897dae
+
+
+##starting to build tables
+#B26106 
+
+race_vars <- c(
+  White = "B26103H_004",
+  Black = "B26103B_004",
+  Native = "B26103C_004",
+  Asian = "B26103D_004",
+  HIPI = "B26103E_004",
+  Hispanic = "B26103I_004"
+)
+
+
+#prison pop
+adult_correction <- c(
+  No_HS = "B26106_017",
+  HS = "B26106_018",
+  Some_College = "B26106_019",
+  Bachelor_or_Higher = "B26106_020")
+
+mi_prison <- get_acs(
+  geography = "state",
+  state = "MI",
+  variables = adult_correction,
+  summary_var = "B26106_016"
+) 
+
+mi_prison <- mi_prison %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+mi_prison %>%
+  ggplot( aes(x=variable, y=percent)) +
+  geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+  coord_flip() +
+  xlab("") +
+  theme_bw()+
+  labs(title = "Percent of MI Prison Population by Educational Attainment", 
+     subtitle = "2019 1-year ACS estimates", 
+     y = "Percent", 
+     x = "Education Level", 
+     caption = "Source: ACS Data Table B26106 via the tidycensus R package") 
+
+
+         
+
+#HS = c("B26106_018","B26106_019","B26106_020"))
+groupquarters3 <- get_acs(
+  geography = "state",
+  state = c("MI", "IL","IN","WI", "OH"),
+  variables = adult_correction,
+  year = 2019,
+  summarize(min = min(estimate, na.rm = TRUE), 
+            mean = mean(estimate, na.rm = TRUE), 
+            median = median(estimate, na.rm = TRUE), 
+            max = max(estimate, na.rm = TRUE))
+)
+
+#Illinois, Indiana, Iowa, Kansas, Michigan, Minnesota, Missouri, Nebraska, North Dakota, Ohio, South Dakota, and Wisconsin.
+
+summarize(min = min(estimate, na.rm = TRUE), 
+          mean = mean(estimate, na.rm = TRUE), 
+          median = median(estimate, na.rm = TRUE), 
+          max = max(estimate, na.rm = TRUE))
+
+ggplot(groupquarters3, aes(x = estimate, y = variable)) + 
+  geom_density_ridges() + 
+  theme_ridges() + 
+  labs(x = "Population Count", 
+       y = "")
+  #scale_x_continuous(labels = scales::count)
+
+#GQ3 <- groupquarters3 %>%
+ # select(-moe, -NAME, -GEOID)%>%
+  #education = if_else(variables == no_HS, "no_HS", "HS")
+
+
