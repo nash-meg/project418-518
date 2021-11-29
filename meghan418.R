@@ -1,7 +1,293 @@
+################### Use this R File ####################################
+
+# Load in needed packages
 library(tidycensus)
 library(tidyverse)
 
+# Load in census api key - need to access census data
 census_api_key("e9df2097261bae1ad446e25f6d7a62746f68e2a4", install = TRUE)
 
+# Doing only one year to avoid errors
 all_vars_acs5 <-
   load_variables(year = 2019, dataset = "acs5")
+
+# MY VARIABLES:
+# Median earnings in the past 12 months (in 2019 inflation-adjusted dollars)
+# by sex by educational attainment
+    # B20004
+    # Gives education by income and segments for sex (male/female)
+# Educational attainment and employment status by language spoken at home
+    # B16010
+    # Can infer if they are native English speakers and compare education
+    # levels (can break down by individual languages or just native English/non)
+# Citizen, voting-age population by educational attainment
+    # B29002
+    # Just a count of those older than 18 and what their education level is.
+    # Will let us easily get the graduation rates for the entire population.
+
+
+################### Loading in Variables ####################################
+
+## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
+## BY SEX BY EDUCATIONAL ATTAINMENT
+## B20004
+#total - no sex division
+median_earn_total <- ("B20004_001")
+median_earn_less_hs <- ("B20004_002")
+median_earn_hs <- ("B20004_003")
+median_earn_college <- ("B20004_004")
+median_earn_bach_deg <- ("B20004_005")
+median_earn_grad_deg <- ("B20004_006")
+#male
+median_earn_male <- ("B20004_007")
+median_earn_male_less_hs <- ("B20004_008")
+median_earn_male_hs <- ("B20004_009")
+median_earn_male_college <- ("B20004_010")
+median_earn_male_bach_deg <- ("B20004_011")
+median_earn_male_grad_deg <- ("B20004_012")
+#female
+median_earn_fem <- ("B20004_013")
+median_earn_fem_less_hs <- ("B20004_014")
+median_earn_fem_hs <- ("B20004_015")
+median_earn_fem_college <- ("B20004_016")
+median_earn_fem_bach_deg <- ("B20004_017")
+median_earn_fem_grad_deg <- ("B20004_018")
+
+
+## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
+## B16010
+edu_emp_lang_total <- ("B16010_001")
+#less than high school
+edu_emp_lang_less_hs <- ("B16010_002")
+edu_emp_lang_less_hs_work <- ("B16010_003")
+edu_emp_lang_less_hs_work_eng <- ("B16010_004")
+edu_emp_lang_less_hs_work_spanish <- ("B16010_005")
+edu_emp_lang_less_hs_work_indoEurop <- ("B16010_006")
+edu_emp_lang_less_hs_work_asian <- ("B16010_007")
+edu_emp_lang_less_hs_work_other <- ("B16010_008")
+edu_emp_lang_less_hs_NOTwork <- ("B16010_009")
+edu_emp_lang_less_hs_NOTwork_eng <- ("B16010_010")
+edu_emp_lang_less_hs_NOTwork_spanish <- ("B16010_011")
+edu_emp_lang_less_hs_NOTwork_indoEurop <- ("B16010_012")
+edu_emp_lang_less_hs_NOTwork_asian <- ("B16010_013")
+edu_emp_lang_less_hs_NOTwork_other <- ("B16010_014")
+
+#high school graduate
+edu_emp_lang_hs <- ("B16010_015")
+edu_emp_lang_hs_work <- ("B16010_016")
+edu_emp_lang_hs_work_eng <- ("B16010_017")
+edu_emp_lang_hs_work_spanish <- ("B16010_018")
+edu_emp_lang_hs_work_indoEurop <- ("B16010_019")
+edu_emp_lang_hs_work_asian <- ("B16010_020")
+edu_emp_lang_hs_work_other <- ("B16010_021")
+edu_emp_lang_hs_NOTwork <- ("B16010_022")
+edu_emp_lang_hs_NOTwork_eng <- ("B16010_023")
+edu_emp_lang_hs_NOTwork_spanish <- ("B16010_024")
+edu_emp_lang_hs_NOTwork_indoEurop <- ("B16010_025")
+edu_emp_lang_hs_NOTwork_asian <- ("B16010_026")
+edu_emp_lang_hs_NOTwork_other <- ("B16010_027")
+
+#some college
+edu_emp_lang_college <- ("B16010_028")
+edu_emp_lang_college_work <- ("B16010_029")
+edu_emp_lang_college_work_eng <- ("B16010_030")
+edu_emp_lang_college_work_spanish <- ("B16010_031")
+edu_emp_lang_college_work_indoEurop <- ("B16010_032")
+edu_emp_lang_college_work_asian <- ("B16010_033")
+edu_emp_lang_college_work_other <- ("B16010_034")
+edu_emp_lang_college_NOTwork <- ("B16010_035")
+edu_emp_lang_college_NOTwork_eng <- ("B16010_036")
+edu_emp_lang_college_NOTwork_spanish <- ("B16010_037")
+edu_emp_lang_college_NOTwork_indoEurop <- ("B16010_038")
+edu_emp_lang_college_NOTwork_asian <- ("B16010_039")
+edu_emp_lang_college_NOTwork_other <- ("B16010_040")
+
+#bachelors degree or higher
+edu_emp_lang_bach_deg <- ("B16010_041")
+edu_emp_lang_bach_deg_work_eng <- ("B16010_042")
+edu_emp_lang_bach_deg_work_spanish <- ("B16010_043")
+edu_emp_lang_bach_deg_work_indoEurop <- ("B16010_044")
+edu_emp_lang_bach_deg_work_asian <- ("B16010_045")
+edu_emp_lang_bach_deg_work_other <- ("B16010_046")
+edu_emp_lang_bach_deg_NOTwork <- ("B16010_047")
+edu_emp_lang_bach_deg_NOTwork_eng <- ("B16010_048")
+edu_emp_lang_bach_deg_NOTwork_spanish <- ("B16010_049")
+edu_emp_lang_bach_deg_NOTwork_indoEurop <- ("B16010_050")
+edu_emp_lang_bach_deg_NOTwork_asian <- ("B16010_051")
+edu_emp_lang_bach_deg_NOTwork_other <- ("B16010_052")
+
+
+## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
+## B29002
+voting_age_total <- ("B29002_001")
+#voting_age_below_9th <- ("B29002_002")
+voting_age_hs <- ("B29002_003")
+voting_age_hs_grad <- ("B29002_004")
+voting_age_college <- ("B29002_005")
+voting_age_assoc <- ("B29002_006")
+voting_age_bach <- ("B29002_007")
+voting_age_grad <- ("B29002_008")
+
+
+################### Making the datasets ####################################
+
+## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
+## BY SEX BY EDUCATIONAL ATTAINMENT
+# total - no sex division
+med_earn_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(median_earn_total, median_earn_less_hs, median_earn_hs, 
+                median_earn_college, median_earn_bach_deg,
+                median_earn_grad_deg),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# male
+med_earn_male_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(median_earn_male, median_earn_male_less_hs, median_earn_male_hs, 
+                median_earn_male_college, median_earn_male_bach_deg, 
+                median_earn_male_grad_deg),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# female
+med_earn_fem_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(median_earn_fem, median_earn_fem_less_hs, median_earn_fem_hs, 
+                median_earn_fem_college, median_earn_fem_bach_deg, 
+                median_earn_fem_grad_deg),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+
+
+## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
+# total - no divisions
+edu_emp_lang_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_total),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# less than high school
+edu_emp_lang_less_hs_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_less_hs, edu_emp_lang_less_hs_work,
+                edu_emp_lang_less_hs_work_eng,
+                edu_emp_lang_less_hs_work_spanish,
+                edu_emp_lang_less_hs_work_indoEurop,
+                edu_emp_lang_less_hs_work_asian,
+                edu_emp_lang_less_hs_work_other,
+                edu_emp_lang_less_hs_NOTwork,
+                edu_emp_lang_less_hs_NOTwork_eng,
+                edu_emp_lang_less_hs_NOTwork_spanish,
+                edu_emp_lang_less_hs_NOTwork_indoEurop,
+                edu_emp_lang_less_hs_NOTwork_asian,
+                edu_emp_lang_less_hs_NOTwork_other),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# high school
+edu_emp_lang_hs_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_hs, edu_emp_lang_hs_work, 
+                edu_emp_lang_hs_work_eng,
+                edu_emp_lang_hs_work_spanish,
+                edu_emp_lang_hs_work_indoEurop,
+                edu_emp_lang_hs_work_asian,
+                edu_emp_lang_hs_work_other,
+                edu_emp_lang_hs_NOTwork,
+                edu_emp_lang_hs_NOTwork_eng,
+                edu_emp_lang_hs_NOTwork_spanish,
+                edu_emp_lang_hs_NOTwork_indoEurop,
+                edu_emp_lang_hs_NOTwork_asian,
+                edu_emp_lang_hs_NOTwork_other),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# some college
+edu_emp_lang_college_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_college, edu_emp_lang_college_work,
+                edu_emp_lang_college_work_eng,
+                edu_emp_lang_college_work_spanish,
+                edu_emp_lang_college_work_indoEurop,
+                edu_emp_lang_college_work_asian,
+                edu_emp_lang_college_work_other,
+                edu_emp_lang_college_NOTwork,
+                edu_emp_lang_college_NOTwork_eng,
+                edu_emp_lang_college_NOTwork_spanish,
+                edu_emp_lang_college_NOTwork_indoEurop,
+                edu_emp_lang_college_NOTwork_asian,
+                edu_emp_lang_college_NOTwork_other),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# bachelor's degree or higher
+edu_emp_lang_bach_deg_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_bach_deg, edu_emp_lang_bach_deg_work_eng,
+                edu_emp_lang_bach_deg_work_spanish,
+                edu_emp_lang_bach_deg_work_indoEurop,
+                edu_emp_lang_bach_deg_work_asian,
+                edu_emp_lang_bach_deg_work_other,
+                edu_emp_lang_bach_deg_NOTwork,
+                edu_emp_lang_bach_deg_NOTwork_eng,
+                edu_emp_lang_bach_deg_NOTwork_spanish,
+                edu_emp_lang_bach_deg_NOTwork_indoEurop,
+                edu_emp_lang_bach_deg_NOTwork_asian,
+                edu_emp_lang_bach_deg_NOTwork_other),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+
+
+## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
+# total - no sex division
+voting_age_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(voting_age_total, voting_age_hs, voting_age_hs_grad, 
+                voting_age_college, voting_age_assoc, voting_age_bach,
+                voting_age_grad),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+
+
+
+# Median Earnings
+# mn_hh_income_recode <- mn_hh_income %>%
+#   filter(variable != "B20004_001") %>%
+#   mutate(incgroup = case_when(
+#     variable < "B20004_002" ~ "lessHS", 
+#     TRUE ~ "hsGrad"
+#   ))
+
