@@ -104,17 +104,18 @@ edu_emp_lang_college_NOTwork_other <- ("B16010_040")
 
 #bachelors degree or higher
 edu_emp_lang_bach_deg <- ("B16010_041")
-edu_emp_lang_bach_deg_work_eng <- ("B16010_042")
-edu_emp_lang_bach_deg_work_spanish <- ("B16010_043")
-edu_emp_lang_bach_deg_work_indoEurop <- ("B16010_044")
-edu_emp_lang_bach_deg_work_asian <- ("B16010_045")
-edu_emp_lang_bach_deg_work_other <- ("B16010_046")
-edu_emp_lang_bach_deg_NOTwork <- ("B16010_047")
-edu_emp_lang_bach_deg_NOTwork_eng <- ("B16010_048")
-edu_emp_lang_bach_deg_NOTwork_spanish <- ("B16010_049")
-edu_emp_lang_bach_deg_NOTwork_indoEurop <- ("B16010_050")
-edu_emp_lang_bach_deg_NOTwork_asian <- ("B16010_051")
-edu_emp_lang_bach_deg_NOTwork_other <- ("B16010_052")
+edu_emp_lang_bach_deg_work <- ("B16010_042")
+edu_emp_lang_bach_deg_work_eng <- ("B16010_043")
+edu_emp_lang_bach_deg_work_spanish <- ("B16010_044")
+edu_emp_lang_bach_deg_work_indoEurop <- ("B16010_045")
+edu_emp_lang_bach_deg_work_asian <- ("B16010_046")
+edu_emp_lang_bach_deg_work_other <- ("B16010_047")
+edu_emp_lang_bach_deg_NOTwork <- ("B16010_048")
+edu_emp_lang_bach_deg_NOTwork_eng <- ("B16010_049")
+edu_emp_lang_bach_deg_NOTwork_spanish <- ("B16010_050")
+edu_emp_lang_bach_deg_NOTwork_indoEurop <- ("B16010_051")
+edu_emp_lang_bach_deg_NOTwork_asian <- ("B16010_052")
+edu_emp_lang_bach_deg_NOTwork_other <- ("B16010_053")
 
 
 ## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
@@ -281,6 +282,24 @@ voting_age_ds <- get_acs(
   geometry = FALSE
 )
 
+
+################### Combining the Variables ####################################
+
+## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
+# combining high school graduate, some college, and bachelors or higher
+edu_emp_lang_grad <- c("B16010_015", "B16010_028", "B16010_041")
+edu_emp_lang_grad_work <- c("B16010_016", "B16010_029", "B16010_042")
+edu_emp_lang_grad_work_eng <- c("B16010_017", "B16010_030", "B16010_043")
+edu_emp_lang_grad_work_spanish <- c("B16010_018", "B16010_031", "B16010_044")
+edu_emp_lang_grad_work_indoEurop <- c("B16010_019", "B16010_031", "B16010_045")
+edu_emp_lang_grad_work_asian <- c("B16010_020", "B16010_033", "B16010_046")
+edu_emp_lang_grad_work_other <- c("B16010_021", "B16010_034", "B16010_047")
+edu_emp_lang_grad_NOTwork <- c("B16010_022", "B16010_035", "B16010_048")
+edu_emp_lang_grad_NOTwork_eng <- c("B16010_023", "B16010_036", "B16010_049")
+edu_emp_lang_grad_NOTwork_spanish <- c("B16010_024", "B16010_037", "B16010_050")
+edu_emp_lang_grad_NOTwork_indoEurop <- c("B16010_025", "B16010_038", "B16010_051")
+edu_emp_lang_grad_NOTwork_asian <- c("B16010_026", "B16010_039", "B16010_052")
+edu_emp_lang_grad_NOTwork_other <- c("B16010_027", "B16010_040", "B16010_053")
 
 
 # Median Earnings
