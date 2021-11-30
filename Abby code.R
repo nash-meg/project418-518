@@ -1,149 +1,67 @@
+---
+title: "Abby Code2"
+author: "Abby"
+date: "11/28/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
 
+```{r, Libraries, message = FALSE}
 library(tidyverse)
 library(tidycensus)
 library(ggridges)
 library(dplyr)
+library(tigris)
 options(tigris_use_cache = TRUE)
+library(leaflet)
+library(sf)
+library(packcircles)
+library(ggplot2)
+library(viridis)
+library(ggiraph)
+library(ggbeeswarm)
+```
 
-census_api_key("67cbcd7b6d617916475eb5bd88439380a2511582", install = TRUE)
-readRenviron("~/.Renviron")
+```{r, load_variables}
+#census_api_key("67cbcd7b6d617916475eb5bd88439380a2511582", install = TRUE)
+#readRenviron("~/.Renviron")
 
 all_vars_acs5 <- 
   load_variables(year = 2019, dataset = "acs5")
+```
 
 
-#just testing
-all_vars_acs5 %>% 
-  filter(concept == "EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME FOR THE POPULATION 25 YEARS AND OVER") %>%
-  view()
+```{r, group_quarters3_define_variables_B26201}
+adult_prison_total <- ("B26106_016")
+ap_noHS <- ("B26106_017")
+ap_HS <- c("B26106_018", "B26106_019", "B26106_020")
+```
 
-all_vars_acs5 %>% 
-  view()
+```{r, prison_plots_bar_chart}
+#state_ap_estimates <- get_acs(
+#  geography = "state",
+#  state =  "MI",
+#  variables = c(ap_noHS, ap_HS),
+#  survey = "acs5",
+#  year = 2019,
+#  output = "wide",
+#  geometry = FALSE
+#)
 
-vars_acs5_test <-
-  c(
-    lessthanhs_inlaborforce = "B16010_004",
-    lessthanhs_notinlaborforce = "B16010_009"
-  )
-
-#CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
-voting_age_total <- ("B29002_002")
-voting_age_hs_grad <- ("B29002_004")
-#voting_age_below_9 <- ("B29002_002")
-voting_age_hs <- ("B29002_003")
-voting_age_some_college <- ("B29002_005")
-voting_age_assoc <- ("B29002_006")
-voting_age_bachelor <- ("B29002_007")
-voting_age_graduate <- ("B29002_008")
-
-x
-#SEX BY AGE BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 18 YEARS AND OVER
-voting_age_female_total <- ("B15001_043")
-voting_age_male_total <- ("B15001_002")
-female_1824_hs_grad <- ("B15001_047")
-male_1824_hs_grad <- ("B15001_006")
-
-#HEALTH INSURANCE COVERAGE STATUS AND TYPE BY AGE BY EDUCATIONAL ATTAINMENT 
-#age 24 to 65
-total_ins <- ("B27019_001")
-total_lessthan_hs <- ("B27019_003")
-lt_hs_with_ins <- ("B27019_004")
-lt_hs_no_ins <- ("B27019_007")
-ls_hs_public_ins <- ("B27019_006")
-hsgrad_with_ins <- ("B27019_009")
-hsgrad_no_ins <- ("B27019_012")
-hs_grad_public_ins <- ("B27019_011")
-total_hs_grads <- ("B27019_008")
-
-test <-
-  get_acs(
-    geography = 'state',
-    state = 'MI',
-    #county = 'Kent',
-    geometry = FALSE,
-    table = 'B27019',
-    year = 2019
-  )
-
-test %>% 
-  pivot_wider(
-    names_from = variables, 
-    values_from = c(estimate, moe)
-  )
-
-testwide <- get_acs(geography = "state", state = "MI", table = "B27019", 
-                    output = "wide")
-testwide
-
-
-
-allocation_rate <-
-  c(
-    allocated = "B99151_002",
-    total_response = "B99151_001"
-  )
-
-df_acs <-
-  get_acs(
-    geography = 'county',
-    state = 'MI',
-    #county = 'Kent',
-    geometry = TRUE,
-    variables = voting_age_hs_grad, 
-    year = 2019
-  )
-df_acs2 <-
-  get_acs(
-    geography = 'state',
-    state = 'MI',
-    #county = 'Kent',
-    #geometry = TRUE,
-    variables = allocation_rate, 
-    year = 2019
-  )
-
-df_acs %>% 
-  pivot_wider(
-    names_from = variable, 
-    values_from = c(estimate, moe)
-  )
-
-
-test_geo <- get_acs(state = "MI", county = "Kent", geography = "tract", 
-                    variables = "B16010_004", geometry = TRUE)
-#heat map:
-df_acs %>%
-  ggplot(aes(fill = estimate)) + 
-  geom_sf(color = NA) + 
-  coord_sf(crs = 26911) + 
-  scale_fill_viridis_c(option = "magma")
-
-
-
-##starting to build tables
-#B26106 
-
-race_vars <- c(
-  White = "B26103H_004",
-  Black = "B26103B_004",
-  Native = "B26103C_004",
-  Asian = "B26103D_004",
-  HIPI = "B26103E_004",
-  Hispanic = "B26103I_004"
-)
-
-
-#prison pop
-adult_correction <- c(
-  No_HS = "B26106_017",
-  HS = "B26106_018",
-  Some_College = "B26106_019",
-  Bachelor_or_Higher = "B26106_020")
+#ap_summary <- state_ap_estimates %>%
+ # rowwise() %>%
+#  mutate(ap_noHS = B26106_017E,
+ #        ap_HS = sum(B26106_020E,B26106_019E,B26106_018E),
+  #      ) %>%
+ # select(NAME,ap_HS,ap_noHS ) %>%
+#  arrange(NAME) %>%
+#  ungroup()
 
 mi_prison <- get_acs(
   geography = "state",
   state = "MI",
-  variables = adult_correction,
+  variables = c(ap_noHS, ap_HS),
   summary_var = "B26106_016"
 ) 
 
@@ -157,43 +75,172 @@ mi_prison %>%
   coord_flip() +
   xlab("") +
   theme_bw()+
+  scale_x_discrete(labels = c('No High School','High School Graduate','Some College', 'Bachelors or Higher'))+
   labs(title = "Percent of MI Prison Population by Educational Attainment", 
-     subtitle = "2019 1-year ACS estimates", 
+     subtitle = "2019 5-year ACS estimates", 
      y = "Percent", 
      x = "Education Level", 
      caption = "Source: ACS Data Table B26106 via the tidycensus R package") 
+```
+
+```{r, define_variables_jobs}
+
+#enrolled in school
+FnoHS_employed <- ("B14005_027")
+FnoHS_unemployed <- ("B14005_028")
+FnoHS_notinlaborforce <- ("B14005_029")
+FHS_employed <- ("B14005_023")
+FHS_unemployed <- ("B14005_024")
+FHS_notinlaborforce <-("B14005_025")
+MnoHS_employed <- ("B14005_013")
+MnoHS_unemployed <- ("B14005_014")
+MnoHS_notinlaborforce <-("B14005_015")
+MHS_employed <- ("B14005_009")
+MHS_unemployed <- ("B14005_010")
+MHS_notinlaborforce <- ("B14005_011")
+
+employed <- c(Male_No_HS = "B14005_013", 
+              Male_HS = "B14005_009", 
+              Female_No_HS = "B14005_027", 
+              Female_HS = "B14005_023")
+unemployed <- c(Male_No_HS = "B14005_014", 
+              Male_HS = "B14005_010", 
+              Female_No_HS = "B14005_028", 
+              Female_HS = "B14005_024")
+nilf <- c(Male_No_HS = "B14005_014", 
+              Male_HS = "B14005_011", 
+              Female_No_HS = "B14005_029", 
+              Female_HS = "B14005_025")
+
+```
+
+```{r, labor_force_plots_employed}
+
+#Kent county, employed
+kent_tracts <- get_acs(geography = "tract", variables = employed, 
+                        state = "MI", county = "Kent County", geometry = TRUE,
+                        summary_var = "B14005_001") 
+
+kent_tracts <- kent_tracts %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+kent_tracts %>% 
+  ggplot(aes(fill = pct)) +
+    geom_sf(color = NA) +
+    facet_wrap(~variable) +
+    scale_fill_viridis_c()
+
+#wayne county, employed
+wayne_tracts <- get_acs(geography = "tract", variables = employed, 
+                        state = "MI", county = "Wayne County", geometry = TRUE,
+                        summary_var = "B14005_001") 
+
+wayne_tracts <- wayne_tracts %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+wayne_tracts %>% 
+  ggplot(aes(fill = pct)) +
+    geom_sf(color = NA) +
+    facet_wrap(~variable) +
+    scale_fill_viridis_c()
+```
+
+```{r, labor_force_plots_unemployed}}
+#Kent county, unemployed
+kent_tracts2 <- get_acs(geography = "tract", variables = unemployed, 
+                        state = "MI", county = "Kent County", geometry = TRUE,
+                        summary_var = "B14005_001") 
+
+kent_tracts2 <- kent_tracts2 %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+kent_tracts2 %>% 
+  ggplot(aes(fill = pct)) +
+    geom_sf(color = NA) +
+    facet_wrap(~variable) +
+    scale_fill_viridis_c()
+
+#wayne county, unemployed
+wayne_tracts2 <- get_acs(geography = "tract", variables = unemployed, 
+                        state = "MI", county = "Wayne County", geometry = TRUE,
+                        summary_var = "B14005_001") 
+
+wayne_tracts2 <- wayne_tracts2 %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+wayne_tracts2 %>% 
+  ggplot(aes(fill = pct)) +
+    geom_sf(color = NA) +
+    facet_wrap(~variable) +
+    scale_fill_viridis_c()
+```
 
 
-         
+```{r, not_in_labor_force}
 
-#HS = c("B26106_018","B26106_019","B26106_020"))
-groupquarters3 <- get_acs(
-  geography = "state",
-  state = c("MI", "IL","IN","WI", "OH"),
-  variables = adult_correction,
-  year = 2019,
-  summarize(min = min(estimate, na.rm = TRUE), 
-            mean = mean(estimate, na.rm = TRUE), 
-            median = median(estimate, na.rm = TRUE), 
-            max = max(estimate, na.rm = TRUE))
-)
+#Kent county, employed
+kent_tracts3 <- get_acs(geography = "tract", variables = nilf, 
+                        state = "MI", county = "Kent County", geometry = TRUE,
+                        summary_var = "B14005_001") 
 
-#Illinois, Indiana, Iowa, Kansas, Michigan, Minnesota, Missouri, Nebraska, North Dakota, Ohio, South Dakota, and Wisconsin.
+kent_tracts3 <- kent_tracts3 %>% 
+  mutate(pct = 100 * estimate / summary_est)
 
-summarize(min = min(estimate, na.rm = TRUE), 
-          mean = mean(estimate, na.rm = TRUE), 
-          median = median(estimate, na.rm = TRUE), 
-          max = max(estimate, na.rm = TRUE))
+kent_tracts3 %>% 
+  ggplot(aes(fill = pct)) +
+    geom_sf(color = NA) +
+    facet_wrap(~variable) +
+    scale_fill_viridis_c()
 
-ggplot(groupquarters3, aes(x = estimate, y = variable)) + 
-  geom_density_ridges() + 
-  theme_ridges() + 
-  labs(x = "Population Count", 
-       y = "")
-  #scale_x_continuous(labels = scales::count)
+#wayne county, employed
+wayne_tracts3 <- get_acs(geography = "tract", variables = nilf, 
+                        state = "MI", county = "Wayne County", geometry = TRUE,
+                        summary_var = "B14005_001") 
 
-#GQ3 <- groupquarters3 %>%
- # select(-moe, -NAME, -GEOID)%>%
-  #education = if_else(variables == no_HS, "no_HS", "HS")
+wayne_tracts3 <- wayne_tracts3 %>% 
+  mutate(pct = 100 * estimate / summary_est)
 
+wayne_tracts3 %>% 
+  ggplot(aes(fill = pct)) +
+    geom_sf(color = NA) +
+    facet_wrap(~variable) +
+    scale_fill_viridis_c()
+```
+
+
+```{r, leaflet_MI}
+
+mi1 <- get_acs(geography = "county", 
+               variables = c(Male_HS_employed = "B14005_023"), 
+               state = "MI", 
+               geometry = TRUE) %>%
+  st_transform(4326)
+
+mi2 <- get_acs(geography = "tract", 
+               variables = c(Male_HS_employed = "B14005_023"), 
+               state = "MI", 
+               geometry = TRUE) %>%
+  st_transform(4326)
+
+bins <- c(0, 10, 20,30,40,50,60,70,80,90,100)
+
+pala <- colorBin("viridis", mi1$estimate, bins = bins)
+
+leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(data = mi1, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~pala(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Counties") %>%
+  addPolygons(data = mi2, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~pala(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Tracts") %>%
+  addLegend(pal = pala, values = mi1$estimate, 
+            title = "Population Males Employed with HS Diploma") %>%
+  addLayersControl(overlayGroups = c("Tracts", "Counties")) %>%
+  hideGroup("Tracts")
+```
 
