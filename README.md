@@ -29,6 +29,7 @@ Here are some useful links:
 Census Data Beginnings:
 
 https://dcl-wrangle.stanford.edu/census.html#census-bureau-basics
+
 https://walker-data.com/census-r/wrangling-census-data-with-tidyverse-tools.html (wrangling data w/ tidyverse)
 
 Census Documentation:
@@ -38,14 +39,17 @@ https://www.census.gov/programs-surveys/acs/guidance/handbooks/general.html
 ACS package:
 
 https://cran.r-project.org/web/packages/acs/readme/README.html
+
 https://walker-data.com/tidycensus/articles/basic-usage.html#geography-in-tidycensus
 
 Tidycensus package:
 
 https://github.com/walkerke/umich-workshop
+
 https://rstudio-pubs-static.s3.amazonaws.com/541247_e7b707cd2f71405bb5624517877785ff.html
 
 Mapping with Tidycensus:
 
 https://walker-data.com/isds-webinar/#34 (leaflet)
+
 https://walker-data.com/tidycensus/articles/spatial-data.html (facet)
