@@ -1,8 +1,17 @@
-################### Use this R File ####################################
+################### Use this R File ##########################################
 
 # Load in needed packages
 library(tidycensus)
 library(tidyverse)
+library(ggbeeswarm)
+library(ggridges)
+library(dplyr)
+library(leaflet)
+library(sf)
+library(packcircles)
+library(ggplot2)
+library(viridis)
+library(ggiraph)
 
 # Load in census api key - need to access census data
 census_api_key("e9df2097261bae1ad446e25f6d7a62746f68e2a4", install = TRUE)
@@ -10,20 +19,6 @@ census_api_key("e9df2097261bae1ad446e25f6d7a62746f68e2a4", install = TRUE)
 # Doing only one year to avoid errors
 all_vars_acs5 <-
   load_variables(year = 2019, dataset = "acs5")
-
-# MY VARIABLES:
-# Median earnings in the past 12 months (in 2019 inflation-adjusted dollars)
-# by sex by educational attainment
-    # B20004
-    # Gives education by income and segments for sex (male/female)
-# Educational attainment and employment status by language spoken at home
-    # B16010
-    # Can infer if they are native English speakers and compare education
-    # levels (can break down by individual languages or just native English/non)
-# Citizen, voting-age population by educational attainment
-    # B29002
-    # Just a count of those older than 18 and what their education level is.
-    # Will let us easily get the graduation rates for the entire population.
 
 
 ################### Loading in Variables ####################################
@@ -269,7 +264,6 @@ edu_emp_lang_bach_deg_ds <- get_acs(
 
 
 ## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
-# total - no sex division
 voting_age_ds <- get_acs(
   geography = "county",
   state =  "MI",
@@ -355,15 +349,40 @@ edu_emp_lang_comb_summary <- edu_emp_lang_comb_ds %>%
   ungroup()
 
 
+################### Getting Percents for Pie Chart ############################
+
+voting_age_perc <- voting_age_ds %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
 
 
+################### Graphs #############################################
 
-# Median Earnings
-# mn_hh_income_recode <- mn_hh_income %>%
-#   filter(variable != "B20004_001") %>%
-#   mutate(incgroup = case_when(
-#     variable < "B20004_002" ~ "lessHS", 
-#     TRUE ~ "hsGrad"
-#   ))
+## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
+## BY SEX BY EDUCATIONAL ATTAINMENT
 
+## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
+
+## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
+# barplot first 
+bp<- ggplot(voting_age_ds, aes(x="", y=variable))+
+  geom_bar(width = 1)
+bp
+# then use to make pie chart
+pie <- bp + coord_polar("y", start=0)
+pie
+
+#bar chart
+voting_age_ds %>%
+  ggplot( aes(x=variable, y=estimate)) +
+  geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+  coord_flip() +
+  xlab("") +
+  theme_bw()+
+  scale_x_discrete(labels = c('High School, No Diploma','High School Graduate','Some College', 'Bachelors or Higher'))+
+  labs(title = "Percent of MI Voting-Age Population by Educational Attainment", 
+       subtitle = "2019 5-year ACS estimates", 
+       y = "Percent", 
+       x = "Education Level", 
+       caption = "Source: ACS Data Table B26106 via the tidycensus R package") 
 
