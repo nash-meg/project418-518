@@ -298,15 +298,24 @@ edu_emp_lang_grad_NOTwork_other <- c("B16010_027", "B16010_040", "B16010_053")
 ## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
 ## BY SEX BY EDUCATIONAL ATTAINMENT
 # combining e
-employed <- c(Male_No_HS = "B14005_013", 
-              Male_HS = "B14005_009", 
-              Female_No_HS = "B14005_027", 
-              Female_HS = "B14005_023")
-unemployed <- c(Male_No_HS = "B14005_014", 
-                Male_HS = "B14005_010", 
-                Female_No_HS = "B14005_028", 
-                Female_HS = "B14005_024")
-
+total_earn <- c(total = "B20004_001",
+                male = "B20004_007",
+                female = "B20004_013")
+less_hs_earn <- c(total = "B20004_002",
+                male = "B20004_008",
+                female = "B20004_014")
+hs_earn <- c(total = "B20004_003",
+                  male = "B20004_009",
+                  female = "B20004_015")
+college_earn <- c(total = "B20004_004",
+             male = "B20004_010",
+             female = "B20004_016")
+bach_earn <- c(total = "B20004_005",
+                  male = "B20004_011",
+                  female = "B20004_017")
+grad_earn <- c(total = "B20004_006",
+                  male = "B20004_012",
+                  female = "B20004_018")
 
 ################### New Dataset with Combined Vars ############################
 
@@ -373,11 +382,44 @@ voting_age_perc <- voting_age_ds %>%
 ## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
 ## BY SEX BY EDUCATIONAL ATTAINMENT
 ## Do interactive leaflet plot
+mi1 <- get_acs(geography = "county", 
+               variables = c(Male_HS_employed = "B14005_023"), 
+               state = "MI", 
+               geometry = TRUE) %>%
+  st_transform(4326)
+
+mi2 <- get_acs(geography = "tract", 
+               variables = c(Male_HS_employed = "B14005_023"), 
+               state = "MI", 
+               geometry = TRUE) %>%
+  st_transform(4326)
+
+bins <- c(0, 10, 20,30,40,50,60,70,80,90,100)
+
+pala <- colorBin("viridis", mi1$estimate, bins = bins)
+
+leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(data = mi1, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~pala(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Counties") %>%
+  addPolygons(data = mi2, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~pala(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Tracts") %>%
+  addLegend(pal = pala, values = mi1$estimate, 
+            title = "Population Males Employed with HS Diploma") %>%
+  addLayersControl(overlayGroups = c("Tracts", "Counties")) %>%
+  hideGroup("Tracts")
+
 
 ## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
 ## Do facet plots
 kent_tract <- get_acs(geography = "tract",
-                       variables = employed, 
+                       variables = , 
                        state = "MI",
                        county = "Kent County",
                        geometry = TRUE,
@@ -395,7 +437,6 @@ kent_tracts %>%
 
 ## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
 ## Do pie chart (with percents)
-## *****NOT WORKING*****
 # barplot first 
 bp<- ggplot(voting_age_ds, aes(x="", y=variable))+
   geom_bar(width = 1)
