@@ -302,6 +302,62 @@ edu_emp_lang_grad_NOTwork_asian <- c("B16010_026", "B16010_039", "B16010_052")
 edu_emp_lang_grad_NOTwork_other <- c("B16010_027", "B16010_040", "B16010_053")
 
 
+################### New Dataset with Combined Vars ############################
+
+## Making the new education, employment, and language dataset
+edu_emp_lang_comb_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_grad, edu_emp_lang_grad_work,
+                edu_emp_lang_grad_work_eng, 
+                edu_emp_lang_grad_work_spanish, 
+                edu_emp_lang_grad_work_indoEurop, 
+                edu_emp_lang_grad_work_asian, 
+                edu_emp_lang_grad_work_other, 
+                edu_emp_lang_grad_NOTwork, 
+                edu_emp_lang_grad_NOTwork_eng, 
+                edu_emp_lang_grad_NOTwork_spanish, 
+                edu_emp_lang_grad_NOTwork_indoEurop, 
+                edu_emp_lang_grad_NOTwork_asian, 
+                edu_emp_lang_grad_NOTwork_other),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+
+
+# making rowwise summaries for the edu/emp/lang dataset
+edu_emp_lang_comb_summary <- edu_emp_lang_comb_ds %>%
+  rowwise() %>%
+  mutate(
+    edu_emp_lang_grad <- sum(B16010_015E, B16010_028E, B16010_041E), 
+    edu_emp_lang_grad_work <- sum(B16010_016E, B16010_029E, B16010_042E),
+    edu_emp_lang_grad_work_eng <- sum(B16010_017E, B16010_030E, B16010_043E),
+    edu_emp_lang_grad_work_spanish <- sum(B16010_018E, B16010_031E, B16010_044E),
+    edu_emp_lang_grad_work_indoEurop <- sum(B16010_019E, B16010_031E, B16010_045E),
+    edu_emp_lang_grad_work_asian <- sum(B16010_020E, B16010_033E, B16010_046E),
+    edu_emp_lang_grad_work_other <- sum(B16010_021E, B16010_034E, B16010_047E),
+    edu_emp_lang_grad_NOTwork <- sum(B16010_022E, B16010_035E, B16010_048E),
+    edu_emp_lang_grad_NOTwork_eng <- sum(B16010_023E, B16010_036E, B16010_049E),
+    edu_emp_lang_grad_NOTwork_spanish <- sum(B16010_024E, B16010_037E, B16010_050E),
+    edu_emp_lang_grad_NOTwork_indoEurop <- sum(B16010_025E, B16010_038E, B16010_051E),
+    edu_emp_lang_grad_NOTwork_asian <- sum(B16010_026E, B16010_039E, B16010_052E),
+    edu_emp_lang_grad_NOTwork_other <- sum(B16010_027E, B16010_040E, B16010_053E)
+  ) %>%
+  select(NAME, edu_emp_lang_grad, edu_emp_lang_grad_work, edu_emp_lang_grad_work_eng, 
+         edu_emp_lang_grad_work_spanish, edu_emp_lang_grad_work_indoEurop, 
+         edu_emp_lang_grad_work_asian, edu_emp_lang_grad_work_other, 
+         edu_emp_lang_grad_NOTwork, edu_emp_lang_grad_NOTwork_eng, 
+         edu_emp_lang_grad_NOTwork_spanish, edu_emp_lang_grad_NOTwork_indoEurop, 
+         edu_emp_lang_grad_NOTwork_asian, edu_emp_lang_grad_NOTwork_other) %>%
+  arrange(NAME) %>%
+  ungroup()
+
+
+
+
+
 # Median Earnings
 # mn_hh_income_recode <- mn_hh_income %>%
 #   filter(variable != "B20004_001") %>%
