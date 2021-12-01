@@ -53,3 +53,7 @@ Mapping with Tidycensus:
 https://walker-data.com/isds-webinar/#34 (leaflet)
 
 https://walker-data.com/tidycensus/articles/spatial-data.html (facet)
+
+Other graphs:
+
+http://www.sthda.com/english/wiki/ggplot2-pie-chart-quick-start-guide-r-software-and-data-visualization (pie chart)
