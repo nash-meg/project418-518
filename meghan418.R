@@ -277,7 +277,7 @@ voting_age_ds <- get_acs(
 )
 
 
-################### Combining the Variables ####################################
+################### Combining Variables #######################################
 
 ## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
 # combining high school graduate, some college, and bachelors or higher
@@ -294,6 +294,18 @@ edu_emp_lang_grad_NOTwork_spanish <- c("B16010_024", "B16010_037", "B16010_050")
 edu_emp_lang_grad_NOTwork_indoEurop <- c("B16010_025", "B16010_038", "B16010_051")
 edu_emp_lang_grad_NOTwork_asian <- c("B16010_026", "B16010_039", "B16010_052")
 edu_emp_lang_grad_NOTwork_other <- c("B16010_027", "B16010_040", "B16010_053")
+
+## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
+## BY SEX BY EDUCATIONAL ATTAINMENT
+# combining e
+employed <- c(Male_No_HS = "B14005_013", 
+              Male_HS = "B14005_009", 
+              Female_No_HS = "B14005_027", 
+              Female_HS = "B14005_023")
+unemployed <- c(Male_No_HS = "B14005_014", 
+                Male_HS = "B14005_010", 
+                Female_No_HS = "B14005_028", 
+                Female_HS = "B14005_024")
 
 
 ################### New Dataset with Combined Vars ############################
@@ -360,10 +372,30 @@ voting_age_perc <- voting_age_ds %>%
 
 ## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
 ## BY SEX BY EDUCATIONAL ATTAINMENT
+## Do interactive leaflet plot
 
 ## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
+## Do facet plots
+kent_tract <- get_acs(geography = "tract",
+                       variables = employed, 
+                       state = "MI",
+                       county = "Kent County",
+                       geometry = TRUE,
+                       summary_var = "B20004_001") 
+
+kent_tract <- kent_tract %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+kent_tracts %>% 
+  ggplot(aes(fill = pct)) +
+  geom_sf(color = NA) +
+  facet_wrap(~variable) +
+  scale_fill_viridis_c()
+
 
 ## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
+## Do pie chart (with percents)
+## *****NOT WORKING*****
 # barplot first 
 bp<- ggplot(voting_age_ds, aes(x="", y=variable))+
   geom_bar(width = 1)
@@ -372,17 +404,20 @@ bp
 pie <- bp + coord_polar("y", start=0)
 pie
 
-#bar chart
+# classic bar chart
 voting_age_ds %>%
   ggplot( aes(x=variable, y=estimate)) +
   geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
   coord_flip() +
   xlab("") +
   theme_bw()+
-  scale_x_discrete(labels = c('High School, No Diploma','High School Graduate','Some College', 'Bachelors or Higher'))+
+  scale_x_discrete(labels = c('Total Voting Age Population', 'High School, 
+                              No Diploma','High School Graduate', 'Some College', 
+                              'Bachelors Degree', 'Graduate Degree or Higher'))+
   labs(title = "Percent of MI Voting-Age Population by Educational Attainment", 
        subtitle = "2019 5-year ACS estimates", 
        y = "Percent", 
        x = "Education Level", 
-       caption = "Source: ACS Data Table B26106 via the tidycensus R package") 
+       caption = "Source: ACS Data Table B29002 via the tidycensus R package") 
+
 
