@@ -1,0 +1,21 @@
+{
+  "articles": [
+    {
+      "path": "employment.html",
+      "title": "Employment Status",
+      "description": "testestetes\n",
+      "author": [],
+      "contents": "\n\n\n\n",
+      "last_modified": "2021-12-04T19:30:42+00:00"
+    },
+    {
+      "path": "index.html",
+      "title": "Using Census Data to Analyze Educational Attainment",
+      "description": "Data obtained from 5-year American Community Survey 2019\n",
+      "author": [],
+      "contents": "\n\n\n\n",
+      "last_modified": "2021-12-04T19:30:43+00:00"
+    }
+  ],
+  "collections": []
+}

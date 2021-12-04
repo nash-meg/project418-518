@@ -1,0 +1,25 @@
+---
+title: "Using Census Data to Analyze Educational Attainment"
+description: |
+  Data obtained from 5-year American Community Survey 2019
+output_dir: "docs"
+navbar:
+  right:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
+    - text: "Project"
+      href: project.html
+site: distill::distill_website
+search: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating websites with Distill at:
+# https://rstudio.github.io/distill/website.html
+
+```
+
