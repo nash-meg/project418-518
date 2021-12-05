@@ -8,8 +8,9 @@ navbar:
     - text: "About"
       href: index.html
     - text: "Variables"
-      #href: variables.html
       menu:
+          - text: "Gender & Age by Education"
+            href: genderage.html
           - text: "Employment Status"
             href: employment.html
           - text: "Prison Populations"
@@ -18,6 +19,8 @@ navbar:
             href: povertyhouse.html
           - text: "Poverty Status by Gender"
             href: povertygen.html
+          - text: "Lanaguage Spoken at Home"
+            href: language.html
           - text: "Median Earnings"
             href: median.html
     - text: "Code"
