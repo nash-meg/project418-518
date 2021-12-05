@@ -2,24 +2,48 @@
 title: "Using Census Data to Analyze Educational Attainment"
 description: |
   Data obtained from 5-year American Community Survey 2019
-output_dir: "docs"
-navbar:
-  right:
-    - text: "Home"
-      href: index.html
-    - text: "About"
-      href: about.html
-    - text: "Project"
-      href: project.html
+output_dir: docs
 site: distill::distill_website
-search: TRUE
 ---
+ <br /> 
+**Overview:** <br /> 
+The intention of this project is to investigate and analyze graduation rates for Michigan residents. Each variable investigated is available within the navigation at the top right of the screen. Code used to create our analysis & visualizations is also available.   <br /> 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+Variables included in this project were: <br /> 
+-Gender (binary) by age & educational attainment  <br /> 
+-Education levels of adult correctional facility populations <br /> 
+-Employment status by educational attainment <br /> 
+-Poverty status by household type & educational attainment <br /> 
+-Poverty status by gender (binary) & educational attainment  <br /> 
+-Median earnings by gender (binary) & educational attainment  <br /> 
+-Educational attainment by language spoken at home  <br /> 
 
-# Learn more about creating websites with Distill at:
-# https://rstudio.github.io/distill/website.html
 
-```
+Due to time constraints, we omitted a regression analysis and instead focused on descriptive statistics and visualizations. We hope to have future opportunities to expand on this project to include deeper level investigation into the relationships between these variables and educational levels.  <br />  
+ <br />  
+ 
+**Additional details:** <br /> 
+To obtain our datasets, we utilized the U.S. Census Bureau's public database. We used an API call available through the **tidycensus** package to directly import American Community Survey data. We limited our scope to only the 2019 5-year ACS. The 5-year survey allows for more precise estimates of rural populations. 
+ <br />  <br /> 
+
+**Documentation:** <br /> 
+Below are all of the resources used to understand, troubleshoot, inspire, and build our code. <br /> 
+[Various Charts from the R Graph Gallery](https://www.r-graph-gallery.com/index.html)<br /> 
+[Online book:Analyzing US Census Data: Methods, Maps, and Models in R](https://walker-data.com/census-r/index.html)<br /> 
+[Tidycensus Basic Usage](https://walker-data.com/tidycensus/index.html) <br />
+[Exploring US Census data in R with tidycensus](https://walker-data.com/isds-webinar/#1)<br />
+[Data Wrangling: US Census Basics](https://dcl-wrangle.stanford.edu/census.html#census-bureau-basics)<br />
+[Demographic Maps with Tidycensus](http://zevross.com/blog/2018/10/02/creating-beautiful-demographic-maps-in-r-with-the-tidycensus-and-tmap-packages/)<br />
+[Map Census Data with R](https://ctompkins.netlify.app/post/map-census-data-with-r/)<br />
+[Leaflet Package for R](https://rstudio.github.io/leaflet/showhide.html)<br />
+[Understanding ACS](https://www.census.gov/content/dam/Census/library/publications/2020/acs/acs_general_handbook_2020_ch01.pdf)<br />
+[Working with the ACS in R](https://dusp.mit.edu/sites/dusp.mit.edu/files/attachments/publications/working_with_acs_R_v_1.2_0.pdf)<br />
+[Distill for R Markdown](https://rstudio.github.io/distill/website.html#site-navigation)<br />
+
+
+
+
+
+
+
 

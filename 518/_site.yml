@@ -20,5 +20,13 @@ navbar:
             href: povertygen.html
           - text: "Median Earnings"
             href: median.html
+    - text: "Code"
+      menu:
+          - text: "Abby's Code"
+            href: acode.html
+          - text: "Alex's Code"
+            href: axcode.html
+          - text: "Meghan's Code"
+            href: mcode.html
 output: distill::distill_article
 

@@ -108,7 +108,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","output_dir","navbar","site","search"]}},"value":[{"type":"character","attributes":{},"value":["Using Census Data to Analyze Educational Attainment"]},{"type":"character","attributes":{},"value":["Data obtained from 5-year American Community Survey 2019\n"]},{"type":"character","attributes":{},"value":["docs"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["right"]}},"value":[{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["text","href"]}},"value":[{"type":"character","attributes":{},"value":["Home"]},{"type":"character","attributes":{},"value":["index.html"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["text","href"]}},"value":[{"type":"character","attributes":{},"value":["About"]},{"type":"character","attributes":{},"value":["about.html"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["text","href"]}},"value":[{"type":"character","attributes":{},"value":["Project"]},{"type":"character","attributes":{},"value":["project.html"]}]}]}]},{"type":"character","attributes":{},"value":["distill::distill_website"]},{"type":"logical","attributes":{},"value":[true]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","output_dir","site"]}},"value":[{"type":"character","attributes":{},"value":["Using Census Data to Analyze Educational Attainment"]},{"type":"character","attributes":{},"value":["Data obtained from 5-year American Community Survey 2019\n"]},{"type":"character","attributes":{},"value":["docs"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2079,6 +2079,18 @@ Variables
 <a href="median.html">Median Earnings</a>
 </div>
 </div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Code
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="acode.html">Abby's Code</a>
+<a href="axcode.html">Alex's Code</a>
+<a href="mcode.html">Meghan's Code</a>
+</div>
+</div>
 <a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
 </div>
 </nav>
@@ -2096,6 +2108,12 @@ Variables
 
 
 <div class="d-article">
+<p><br /> <strong>Overview:</strong> <br /> The intention of this project is to investigate and analyze graduation rates for Michigan residents. Each variable investigated is available within the navigation at the top right of the screen. Code used to create our analysis &amp; visualizations is also available. <br /></p>
+<p>Variables included in this project were: <br /> -Gender (binary) by age &amp; educational attainment <br /> -Education levels of adult correctional facility populations <br /> -Employment status by educational attainment <br /> -Poverty status by household type &amp; educational attainment <br /> -Poverty status by gender (binary) &amp; educational attainment <br /> -Median earnings by gender (binary) &amp; educational attainment <br /> -Educational attainment by language spoken at home <br /></p>
+<p>Due to time constraints, we omitted a regression analysis and instead focused on descriptive statistics and visualizations. We hope to have future opportunities to expand on this project to include deeper level investigation into the relationships between these variables and educational levels. <br /><br />
+<br /></p>
+<p><strong>Additional details:</strong> <br /> To obtain our datasets, we utilized the U.S. Census Bureau’s public database. We used an API call available through the <strong>tidycensus</strong> package to directly import American Community Survey data. We limited our scope to only the 2019 5-year ACS. The 5-year survey allows for more precise estimates of rural populations. <br /> <br /></p>
+<p><strong>Documentation:</strong> <br /> Below are all of the resources used to understand, troubleshoot, inspire, and build our code. <br /> <a href="https://www.r-graph-gallery.com/index.html">Various Charts from the R Graph Gallery</a><br /> <a href="https://walker-data.com/census-r/index.html">Online book:Analyzing US Census Data: Methods, Maps, and Models in R</a><br /> <a href="https://walker-data.com/tidycensus/index.html">Tidycensus Basic Usage</a> <br /> <a href="https://walker-data.com/isds-webinar/#1">Exploring US Census data in R with tidycensus</a><br /> <a href="https://dcl-wrangle.stanford.edu/census.html#census-bureau-basics">Data Wrangling: US Census Basics</a><br /> <a href="http://zevross.com/blog/2018/10/02/creating-beautiful-demographic-maps-in-r-with-the-tidycensus-and-tmap-packages/">Demographic Maps with Tidycensus</a><br /> <a href="https://ctompkins.netlify.app/post/map-census-data-with-r/">Map Census Data with R</a><br /> <a href="https://rstudio.github.io/leaflet/showhide.html">Leaflet Package for R</a><br /> <a href="https://www.census.gov/content/dam/Census/library/publications/2020/acs/acs_general_handbook_2020_ch01.pdf">Understanding ACS</a><br /> <a href="https://dusp.mit.edu/sites/dusp.mit.edu/files/attachments/publications/working_with_acs_R_v_1.2_0.pdf">Working with the ACS in R</a><br /> <a href="https://rstudio.github.io/distill/website.html#site-navigation">Distill for R Markdown</a><br /></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
