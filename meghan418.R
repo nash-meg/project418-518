@@ -26,21 +26,21 @@ all_vars_acs5 <-
 ## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
 ## BY SEX BY EDUCATIONAL ATTAINMENT
 ## B20004
-#total - no sex division
+# total - no sex division
 median_earn_total <- ("B20004_001")
 median_earn_less_hs <- ("B20004_002")
 median_earn_hs <- ("B20004_003")
 median_earn_college <- ("B20004_004")
 median_earn_bach_deg <- ("B20004_005")
 median_earn_grad_deg <- ("B20004_006")
-#male
+# male
 median_earn_male <- ("B20004_007")
 median_earn_male_less_hs <- ("B20004_008")
 median_earn_male_hs <- ("B20004_009")
 median_earn_male_college <- ("B20004_010")
 median_earn_male_bach_deg <- ("B20004_011")
 median_earn_male_grad_deg <- ("B20004_012")
-#female
+# female
 median_earn_fem <- ("B20004_013")
 median_earn_fem_less_hs <- ("B20004_014")
 median_earn_fem_hs <- ("B20004_015")
@@ -52,7 +52,7 @@ median_earn_fem_grad_deg <- ("B20004_018")
 ## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
 ## B16010
 edu_emp_lang_total <- ("B16010_001")
-#less than high school
+# less than high school
 edu_emp_lang_less_hs <- ("B16010_002")
 edu_emp_lang_less_hs_work <- ("B16010_003")
 edu_emp_lang_less_hs_work_eng <- ("B16010_004")
@@ -67,7 +67,7 @@ edu_emp_lang_less_hs_NOTwork_indoEurop <- ("B16010_012")
 edu_emp_lang_less_hs_NOTwork_asian <- ("B16010_013")
 edu_emp_lang_less_hs_NOTwork_other <- ("B16010_014")
 
-#high school graduate
+# high school graduate
 edu_emp_lang_hs <- ("B16010_015")
 edu_emp_lang_hs_work <- ("B16010_016")
 edu_emp_lang_hs_work_eng <- ("B16010_017")
@@ -82,7 +82,7 @@ edu_emp_lang_hs_NOTwork_indoEurop <- ("B16010_025")
 edu_emp_lang_hs_NOTwork_asian <- ("B16010_026")
 edu_emp_lang_hs_NOTwork_other <- ("B16010_027")
 
-#some college
+# some college
 edu_emp_lang_college <- ("B16010_028")
 edu_emp_lang_college_work <- ("B16010_029")
 edu_emp_lang_college_work_eng <- ("B16010_030")
@@ -97,7 +97,7 @@ edu_emp_lang_college_NOTwork_indoEurop <- ("B16010_038")
 edu_emp_lang_college_NOTwork_asian <- ("B16010_039")
 edu_emp_lang_college_NOTwork_other <- ("B16010_040")
 
-#bachelors degree or higher
+# bachelors degree or higher
 edu_emp_lang_bach_deg <- ("B16010_041")
 edu_emp_lang_bach_deg_work <- ("B16010_042")
 edu_emp_lang_bach_deg_work_eng <- ("B16010_043")
@@ -116,7 +116,7 @@ edu_emp_lang_bach_deg_NOTwork_other <- ("B16010_053")
 ## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
 ## B29002
 voting_age_total <- ("B29002_001")
-#voting_age_below_9th <- ("B29002_002")
+# voting_age_below_9th <- ("B29002_002")
 voting_age_hs <- ("B29002_003")
 voting_age_hs_grad <- ("B29002_004")
 voting_age_college <- ("B29002_005")
@@ -267,13 +267,13 @@ edu_emp_lang_bach_deg_ds <- get_acs(
 voting_age_ds <- get_acs(
   geography = "state",
   state =  "MI",
-  #county = "Kent",
+  # county = "Kent",
   variables = c(voting_age_hs, voting_age_hs_grad, 
                 voting_age_college, voting_age_assoc, voting_age_bach,
                 voting_age_grad),
   survey = "acs5",
   year = 2019,
-  #output = "wide",
+  # output = "wide",
   summary_var=voting_age_total,
   geometry = FALSE
 )
@@ -299,7 +299,7 @@ edu_emp_lang_grad_NOTwork_other <- c("B16010_027", "B16010_040", "B16010_053")
 
 ## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
 ## BY SEX BY EDUCATIONAL ATTAINMENT
-# combining e
+# combining earnings
 total_earn <- c(total = "B20004_001",
                 male = "B20004_007",
                 female = "B20004_013")
@@ -385,18 +385,18 @@ voting_age_perc <- voting_age_ds %>%
 ## BY SEX BY EDUCATIONAL ATTAINMENT
 ## Do interactive leaflet plot
 mi1 <- get_acs(geography = "county", 
-               variables = c(Male_HS_employed = "B14005_023"), 
+               variables = c(median_earn_male_hs = "B20004_009"), 
                state = "MI", 
                geometry = TRUE) %>%
   st_transform(4326)
 
 mi2 <- get_acs(geography = "tract", 
-               variables = c(Male_HS_employed = "B14005_023"), 
+               variables = c(median_earn_male_hs = "B20004_009"), 
                state = "MI", 
                geometry = TRUE) %>%
   st_transform(4326)
 
-bins <- c(0, 10, 20,30,40,50,60,70,80,90,100)
+bins <- c(10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000)
 
 pala <- colorBin("viridis", mi1$estimate, bins = bins)
 
@@ -413,7 +413,7 @@ leaflet() %>%
               fillOpacity = 0.8, 
               group = "Tracts") %>%
   addLegend(pal = pala, values = mi1$estimate, 
-            title = "Population Males Employed with HS Diploma") %>%
+            title = "Population Male Earnings with HS Diploma") %>%
   addLayersControl(overlayGroups = c("Tracts", "Counties")) %>%
   hideGroup("Tracts")
 
