@@ -383,40 +383,85 @@ voting_age_perc <- voting_age_ds %>%
 
 ## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
 ## BY SEX BY EDUCATIONAL ATTAINMENT
-## Do interactive leaflet plot
-mi1 <- get_acs(geography = "county", 
+## interactive leaflet plot
+
+# Male High School Earn
+m_hs_county <- get_acs(geography = "county", 
                variables = c(median_earn_male_hs = "B20004_009"), 
                state = "MI", 
                geometry = TRUE) %>%
   st_transform(4326)
 
-mi2 <- get_acs(geography = "tract", 
+m_hs_tract <- get_acs(geography = "tract", 
                variables = c(median_earn_male_hs = "B20004_009"), 
                state = "MI", 
                geometry = TRUE) %>%
   st_transform(4326)
 
-bins <- c(10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000)
+bins <- c(10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 
+          50000, 55000, 60000, 65000, 70000, 75000, 80000, 85000, 
+          90000, 95000, 100000)
+#can do 10000-55000 for county
+#need up to 100000 for tract
 
-pala <- colorBin("viridis", mi1$estimate, bins = bins)
+pala <- colorBin("viridis", m_hs_county$estimate, bins = bins)
 
 leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
-  addPolygons(data = mi1, stroke = FALSE, smoothFactor = 0.2, 
+  addPolygons(data = m_hs_county, stroke = FALSE, smoothFactor = 0.2, 
               color = ~pala(estimate), 
               label = ~as.character(estimate), 
               fillOpacity = 0.8, 
               group = "Counties") %>%
-  addPolygons(data = mi2, stroke = FALSE, smoothFactor = 0.2, 
+  addPolygons(data = m_hs_tract, stroke = FALSE, smoothFactor = 0.2, 
               color = ~pala(estimate), 
               label = ~as.character(estimate), 
               fillOpacity = 0.8, 
               group = "Tracts") %>%
-  addLegend(pal = pala, values = mi1$estimate, 
-            title = "Population Male Earnings with HS Diploma") %>%
+  addLegend(pal = pala, values = m_hs_county$estimate, 
+            title = "Male Earnings with HS Diploma") %>%
   addLayersControl(overlayGroups = c("Tracts", "Counties")) %>%
   hideGroup("Tracts")
 
+# Female High School Earn
+f_hs_county <- get_acs(geography = "county", 
+                       variables = c(median_earn_fem_hs = "B20004_015"), 
+                       state = "MI", 
+                       geometry = TRUE) %>%
+  st_transform(4326)
+
+f_hs_tract <- get_acs(geography = "tract", 
+                      variables = c(median_earn_fem_hs = "B20004_015"), 
+                      state = "MI", 
+                      geometry = TRUE) %>%
+  st_transform(4326)
+
+binsC <- c(15000, 20000, 25000, 30000)
+binsT <- c(15000, 20000, 25000, 30000, 35000, 40000, 45000)
+# county - only need 15000 - 30000
+# need more for tracts
+
+palaC <- colorBin("viridis", f_hs_county$estimate, bins = binsC)
+palaT <- colorBin("viridis", f_hs_county$estimate, bins = binsT)
+
+leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(data = f_hs_county, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~palaC(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Counties") %>%
+  addPolygons(data = f_hs_tract, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~palaT(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Tracts") %>%
+  addLegend(pal = palaC, values = f_hs_county$estimate, 
+            title = "Female Earnings with HS Diploma") %>%
+  addLegend(pal = palaT, values = f_hs_tract$estimate, 
+            title = "Female Earnings with HS Diploma") %>%
+  addLayersControl(overlayGroups = c("Tracts", "Counties")) %>%
+  hideGroup("Tracts")
 
 ## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
 ## Do facet plots
