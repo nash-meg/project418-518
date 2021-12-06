@@ -1,17 +1,248 @@
 ---
 title: "Employment Status"
 description: |
-  testestetes
+  SEX BY SCHOOL ENROLLMENT BY EDUCATIONAL ATTAINMENT BY EMPLOYMENT STATUS FOR THE POPULATION 16 TO 19 YEARS <br /> Table: B14005 - Variables used: 09-29
 output_dir: "docs"
 site: distill::distill_website
-search: TRUE
+runtime: shiny
+earch: TRUE
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+```{r, define_variables_jobs,echo=FALSE}
 
-# Learn more about creating websites with Distill at:
-# https://rstudio.github.io/distill/website.html
+#enrolled in school
+FnoHS_employed <- ("B14005_027")
+FnoHS_unemployed <- ("B14005_028")
+FnoHS_notinlaborforce <- ("B14005_029")
+FHS_employed <- ("B14005_023")
+FHS_unemployed <- ("B14005_024")
+FHS_notinlaborforce <-("B14005_025")
+MnoHS_employed <- ("B14005_013")
+MnoHS_unemployed <- ("B14005_014")
+MnoHS_notinlaborforce <-("B14005_015")
+MHS_employed <- ("B14005_009")
+MHS_unemployed <- ("B14005_010")
+MHS_notinlaborforce <- ("B14005_011")
+
+employed <- c(Male_No_HS = "B14005_013", 
+              Male_HS = "B14005_009", 
+              Female_No_HS = "B14005_027", 
+              Female_HS = "B14005_023")
+unemployed <- c(Male_No_HS = "B14005_014", 
+              Male_HS = "B14005_010", 
+              Female_No_HS = "B14005_028", 
+              Female_HS = "B14005_024")
+nilf <- c(Male_No_HS = "B14005_015", 
+              Male_HS = "B14005_011", 
+              Female_No_HS = "B14005_029", 
+              Female_HS = "B14005_025")
 
 ```
 
+From the ACS 2019 5-year survey, we looked specifically at MI residents age 16-19 who are **not** currently enrolled in school, whether they obtained a high school diploma (or equivalent) and their status in the labor force. Our variables were already segmented by binary gender. <br /> 
+ <br /> 
+
+Below you will find geographic visualizations of the Michigan that provide information for just male residents. These heat maps show the percentage population by county for the following variables:<br /> <br /> 
+-Males who are employed with no high school diploma <br /> 
+-Males who are employed with a high school diploma <br /> 
+-Unemployed males without high school diploma <br /> 
+-Unemployed males with high school diploma <br /> 
+-Males not in the labor force without a high school diploma <br /> 
+-Males not in the labor force with high school diploma <br /> <br /> 
+Observations from these maps: <br /> 
+Residents (16-19 years old) who are employed and have their high school diplomas have the highest representation in the male population. <br /> Employed males without a high school diploma show up in higher percentages in northern counties vs lower Michigan.<br /> 
+
+```{r, labor_force_plots_males,echo=FALSE}
+
+#males in michigan
+MI_male <- get_acs(geography = "county", 
+                      variables = c(Employed_NoHS ="B14005_013",
+                                    Employed_HS = "B14005_009",
+                                    Unemployed_NoHS = "B14005_014",
+                                    Unemployed_HS ="B14005_010",
+                                    Notinlaborforce_NoHS = "B14005_015",
+                                    Notinlaborforce_HS ="B14005_011"),
+                      state = "MI", geometry = TRUE,
+                      summary_var = "B14005_003") 
+
+MI_male2 <- MI_male %>% 
+  mutate(Percent = 100 * estimate / summary_est)
+
+MI_male2 %>% 
+  ggplot(aes(fill = Percent)) +
+    geom_sf(color = NA) +
+    facet_wrap(~variable, nrow = 2, ncol =3) +
+    scale_fill_viridis_c(option = "plasma")+
+    labs(title = "Percent of Males in Michigan",
+         subtitle = "By High School Graduation and Employment Status")
+
+```
+
+The next series of charts represent the same variables as above, but for the female population (16-19 years old) in Michigan. Similar to males, females with a diploma who are employed represent a higher population in each county. But unlike males, females in MI who have no diploma and are not in the labor force make up the highest percentage of populations in several Upper Peninsula counties. Remember all of the residents represented are **not** enrolled in school, so it is likely that these counties have a high population of females who drop out of high school and do not work & are not seeking work.
+
+```{r, labor_force_plots_females,echo=FALSE}
+
+#females in michigan
+MI_female <- get_acs(geography = "county", 
+                      variables = c(Employed_NoHS ="B14005_027",
+                                    Employed_HS = "B14005_023",
+                                    Unemployed_NoHS = "B14005_028",
+                                    Unemployed_HS ="B14005_024",
+                                    Notinlaborforce_NoHS = "B14005_029",
+                                    Notinlaborforce_HS ="B14005_025"),
+                      state = "MI", geometry = TRUE,
+                      summary_var = "B14005_003") 
+
+MI_female2 <- MI_female %>% 
+  mutate(Percent = 100 * estimate / summary_est)
+
+MI_female2 %>% 
+  ggplot(aes(fill = Percent)) +
+    geom_sf(color = NA) +
+    facet_wrap(~variable, ncol = 3) +
+    scale_fill_viridis_c(option = "plasma")+
+    labs(title = "Percent of Females in Michigan",
+         subtitle = "By High School Graduation and Employment Status")
+
+```
+ 
+ <br />The map below provides a closer look at the population counts for females not in the labor force without high school diplomas. <br /> 
+ 
+```{r, leaflet_MI,echo=FALSE}
+
+mi1 <- get_acs(geography = "county", 
+               variables = c(Notinlaborforce_HS ="B14005_025"), 
+               state = "MI", 
+               geometry = TRUE) %>%
+  st_transform(4326)
+
+mi2 <- get_acs(geography = "tract", 
+               variables = c(Notinlaborforce_HS ="B14005_025"), 
+               state = "MI", 
+               geometry = TRUE) %>%
+  st_transform(4326)
+
+bins <- c(0,20,40,60,80,100,120,140,160,180,200,300,400,500,600,700,800)
+
+pala <- colorBin("viridis", mi1$estimate, bins = bins)
+
+leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(data = mi1, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~pala(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Counties") %>%
+  addPolygons(data = mi2, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~pala(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Tracts") %>%
+  addLegend("bottomright", pal = pala, values = mi1$estimate, 
+            title = "Females in MI: Without HS Diploma") %>%
+  addLayersControl(overlayGroups = c("Tracts", "Counties")) %>% 
+  hideGroup("Tracts")
+```  
+
+
+
+```{r variables,echo=FALSE}
+#shinyapps.io post there then embed using iframe into the website
+library(tidycensus)
+library(shiny)
+library(leaflet)
+library(tidyverse)
+
+twin_cities_race <- get_acs(
+    geography = "tract",
+    variables = c(Female_Employed_NoHS ="B14005_027",
+                  Female_Employed_HS = "B14005_023",
+                  Female_Unemployed_NoHS = "B14005_028",
+                  Female_Unemployed_HS ="B14005_024",
+                  Female_Notinlaborforce_NoHS = "B14005_029",
+                  Female_Notinlaborforce_HS ="B14005_025",
+                  Male_Employed_NoHS ="B14005_013",
+                  Male_Employed_HS = "B14005_009",
+                  Male_Unemployed_NoHS = "B14005_014",
+                  Male_Unemployed_HS ="B14005_010",
+                  Male_Notinlaborforce_NoHS = "B14005_015",
+                  Male_Notinlaborforce_HS ="B14005_011"
+    ),
+    state = "MI",
+    county = c("Kent", "Ionia", "Ottawa","Muskegon","Montcalm","Newaygo","Allegan","Barry", "Kalamazoo", "Van Buren", "Oceana", "Lake", "Mason", "Berrien","Cass"),
+    geometry = TRUE
+) 
+
+groups <- c("Male_Employed_HS" = "Male_Employed_HS",
+            "Female_Employed_NoHS" = "Female_Employed_NoHS",
+            "Female_Employed_HS" = "Female_Employed_HS",
+            "Female_Unemployed_NoHS" = "Female_Unemployed_NoHS",
+            "Female_Unemployed_HS" = "Female_Unemployed_HS",
+            "Female_Notinlaborforce_NoHS" = "Female_Notinlaborforce_NoHS",
+            "Male_Employed_NoHS" = "Male_Employed_NoHS",
+            "Male_Notinlaborforce_NoHS" = "Male_Notinlaborforce_NoHS",
+            "Male_Notinlaborforce_HS" = "Male_Notinlaborforce_HS",
+            "Male_Unemployed_HS" = "Male_Unemployed_HS",
+            "Male_Unemployed_NoHS" = "Male_Unemployed_NoHS"
+            )
+```
+
+```{r setup, echo=FALSE}
+ui <- fluidPage(
+    sidebarLayout(
+        sidebarPanel(
+            selectInput(
+                inputId = "group",
+                label = "Select variable",
+                choices = groups
+            )
+        ),
+        mainPanel(
+            leafletOutput("map", height = "600")
+        )
+    )
+)
+
+server <- function(input, output) {
+    
+    # Reactive function that filters for the selected group in the drop-down menu
+    group_to_map <- reactive({
+        filter(twin_cities_race, variable == input$group)
+    })
+    
+    # Initialize the map object, centered on the Minneapolis-St. Paul area
+    output$map <- renderLeaflet({
+        
+        leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+            addProviderTiles(providers$Stamen.TonerLite) %>%
+            setView(lng = -85.5,
+                    lat = 43,
+                    zoom = 8.5)
+        
+    })
+    
+    observeEvent(input$group, {
+        
+        pal <- colorNumeric("viridis", group_to_map()$estimate)
+        
+        leafletProxy("map") %>%
+            clearShapes() %>%
+            clearControls() %>%
+            addPolygons(data = group_to_map(),
+                        color = ~pal(estimate),
+                        weight = 0.5,
+                        fillOpacity = 0.5,
+                        smoothFactor = 0.2,
+                        label = ~estimate) %>%
+            addLegend(
+                position = "bottomright",
+                pal = pal,
+                values = group_to_map()$estimate,
+                title = "Population in West Michigan"
+            )
+    })
+    
+}
+
+shinyApp(ui = ui, server = server)
+```
