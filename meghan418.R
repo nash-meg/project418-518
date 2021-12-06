@@ -3,6 +3,7 @@
 # Load in needed packages
 library(tidycensus)
 library(tidyverse)
+options(tigris_use_cache = TRUE)
 library(ggbeeswarm)
 library(ggridges)
 library(dplyr)
@@ -319,6 +320,34 @@ grad_earn <- c(total = "B20004_006",
                   male = "B20004_012",
                   female = "B20004_018")
 
+edu_emp_lang_less_hs <- ("B16010_002")
+edu_emp_lang_less_hs_work <- ("B16010_003")
+edu_emp_lang_less_hs_work_eng <- ("B16010_004")
+edu_emp_lang_less_hs_work_spanish <- ("B16010_005")
+edu_emp_lang_less_hs_work_indoEurop <- ("B16010_006")
+edu_emp_lang_less_hs_work_asian <- ("B16010_007")
+edu_emp_lang_less_hs_work_other <- ("B16010_008")
+edu_emp_lang_less_hs_NOTwork <- ("B16010_009")
+edu_emp_lang_less_hs_NOTwork_eng <- ("B16010_010")
+edu_emp_lang_less_hs_NOTwork_spanish <- ("B16010_011")
+edu_emp_lang_less_hs_NOTwork_indoEurop <- ("B16010_012")
+edu_emp_lang_less_hs_NOTwork_asian <- ("B16010_013")
+edu_emp_lang_less_hs_NOTwork_other <- ("B16010_014")
+
+## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
+# combining languages 
+employed_lessHS <- c(lessHS_eng = "B16010_004", 
+                     lessHS_spanish = "B16010_005", 
+                     lessHS_indoEurop = "B16010_006", 
+                     lessHS_asian = "B16010_007",
+                     lessHS_other = "B16010_008")
+
+UNemployed_lessHS <- c(lessHS_eng = "B16010_010", 
+                       lessHS_spanish = "B16010_011", 
+                       lessHS_indoEurop = "B16010_012", 
+                       lessHS_asian = "B16010_013",
+                       lessHS_other = "B16010_014")
+
 ################### New Dataset with Combined Vars ############################
 
 ## Making the new education, employment, and language dataset
@@ -371,6 +400,17 @@ edu_emp_lang_comb_summary <- edu_emp_lang_comb_ds %>%
   arrange(NAME) %>%
   ungroup()
 
+employed_HS <- c(HS_eng = edu_emp_lang_grad_work_eng, 
+                 HS_spanish = edu_emp_lang_grad_work_spanish, 
+                 HS_indoEurop = edu_emp_lang_grad_work_indoEurop, 
+                 HS_asian = edu_emp_lang_grad_work_asian,
+                 HS_other = edu_emp_lang_grad_work_other)
+
+UNemployed_HS <- c(HS_eng = edu_emp_lang_grad_NOTwork_eng, 
+                   HS_spanish = edu_emp_lang_grad_NOTwork_spanish, 
+                   HS_indoEurop = edu_emp_lang_grad_work_indoEurop, 
+                   HS_asian = edu_emp_lang_grad_work_asian,
+                   HS_other = edu_emp_lang_grad_work_other)
 
 ################### Getting Percents for Pie Chart ############################
 
@@ -401,6 +441,7 @@ m_hs_tract <- get_acs(geography = "tract",
 bins <- c(10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 
           50000, 55000, 60000, 65000, 70000, 75000, 80000, 85000, 
           90000, 95000, 100000)
+################################################# ERROR need to figure out bins
 #can do 10000-55000 for county
 #need up to 100000 for tract
 
@@ -438,6 +479,7 @@ f_hs_tract <- get_acs(geography = "tract",
 
 binsC <- c(15000, 20000, 25000, 30000)
 binsT <- c(15000, 20000, 25000, 30000, 35000, 40000, 45000)
+################################################# ERROR need to figure out bins
 # county - only need 15000 - 30000
 # need more for tracts
 
@@ -464,15 +506,16 @@ leaflet() %>%
   hideGroup("Tracts")
 
 ## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
-## Do facet plots
-kent_tract <- get_acs(geography = "tract",
-                       variables = , 
+## facet plots
+# employed, less than HS
+kent_tracts <- get_acs(geography = "tract",
+                       variables = employed_lessHS, 
                        state = "MI",
                        county = "Kent County",
                        geometry = TRUE,
                        summary_var = "B20004_001") 
 
-kent_tract <- kent_tract %>% 
+kent_tracts <- kent_tracts %>% 
   mutate(pct = 100 * estimate / summary_est)
 
 kent_tracts %>% 
@@ -481,10 +524,63 @@ kent_tracts %>%
   facet_wrap(~variable) +
   scale_fill_viridis_c()
 
+# unemployed, less than hs
+kent_tracts <- get_acs(geography = "tract",
+                       variables = UNemployed_lessHS, 
+                       state = "MI",
+                       county = "Kent County",
+                       geometry = TRUE,
+                       summary_var = "B20004_001") 
+
+kent_tracts <- kent_tracts %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+kent_tracts %>% 
+  ggplot(aes(fill = pct)) +
+  geom_sf(color = NA) +
+  facet_wrap(~variable) +
+  scale_fill_viridis_c()
+
+# employed, hs or higher
+########################################### ERROR did not combine var correctly
+kent_tracts_HS <- get_acs(geography = "tract",
+                       variables = employed_HS, 
+                       state = "MI",
+                       county = "Kent County",
+                       geometry = TRUE,
+                       summary_var = "B20004_001") 
+
+kent_tracts_HS <- kent_tracts_HS %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+kent_tracts_HS %>% 
+  ggplot(aes(fill = pct)) +
+  geom_sf(color = NA) +
+  facet_wrap(~variable) +
+  scale_fill_viridis_c()
+
+# employed, hs or higher
+########################################## ERROR did not combine var correctly
+kent_tracts_HS <- get_acs(geography = "tract",
+                       variables = UNemployed_HS, 
+                       state = "MI",
+                       county = "Kent County",
+                       geometry = TRUE,
+                       summary_var = "B20004_001") 
+
+kent_tracts_HS <- kent_tracts_HS %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+kent_tracts_HS %>% 
+  ggplot(aes(fill = pct)) +
+  geom_sf(color = NA) +
+  facet_wrap(~variable) +
+  scale_fill_viridis_c()
+
 
 ## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
 ## Do pie chart (with percents)
-# position of the labels
+################################################ ERROR position of the labels
 voting_age_label <- voting_age_perc %>% 
   arrange(desc(variable)) %>%
   mutate(prop = percent / sum(voting_age_perc$percent) *100) %>%
