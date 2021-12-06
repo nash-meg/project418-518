@@ -1,10 +1,11 @@
-################### Use this R File ##########################################
+## Meghan Nash
+## STA 418_02
+## Semester Project
 
-# Load in needed packages
+# Load in needed packages + options
 library(tidycensus)
 library(tidyverse)
 options(tigris_use_cache = TRUE)
-library(ggbeeswarm)
 library(ggridges)
 library(dplyr)
 library(leaflet)
@@ -246,7 +247,8 @@ edu_emp_lang_college_ds <- get_acs(
 edu_emp_lang_bach_deg_ds <- get_acs(
   geography = "county",
   state =  "MI",
-  variables = c(edu_emp_lang_bach_deg, edu_emp_lang_bach_deg_work_eng,
+  variables = c(edu_emp_lang_bach_deg, edu_emp_lang_bach_deg_work,
+                edu_emp_lang_bach_deg_work_eng,
                 edu_emp_lang_bach_deg_work_spanish,
                 edu_emp_lang_bach_deg_work_indoEurop,
                 edu_emp_lang_bach_deg_work_asian,
@@ -288,7 +290,7 @@ edu_emp_lang_grad <- c("B16010_015", "B16010_028", "B16010_041")
 edu_emp_lang_grad_work <- c("B16010_016", "B16010_029", "B16010_042")
 edu_emp_lang_grad_work_eng <- c("B16010_017", "B16010_030", "B16010_043")
 edu_emp_lang_grad_work_spanish <- c("B16010_018", "B16010_031", "B16010_044")
-edu_emp_lang_grad_work_indoEurop <- c("B16010_019", "B16010_031", "B16010_045")
+edu_emp_lang_grad_work_indoEurop <- c("B16010_019", "B16010_032", "B16010_045")
 edu_emp_lang_grad_work_asian <- c("B16010_020", "B16010_033", "B16010_046")
 edu_emp_lang_grad_work_other <- c("B16010_021", "B16010_034", "B16010_047")
 edu_emp_lang_grad_NOTwork <- c("B16010_022", "B16010_035", "B16010_048")
@@ -300,7 +302,7 @@ edu_emp_lang_grad_NOTwork_other <- c("B16010_027", "B16010_040", "B16010_053")
 
 ## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
 ## BY SEX BY EDUCATIONAL ATTAINMENT
-# combining earnings
+# combining earnings by total and edu level
 total_earn <- c(total = "B20004_001",
                 male = "B20004_007",
                 female = "B20004_013")
@@ -320,22 +322,8 @@ grad_earn <- c(total = "B20004_006",
                   male = "B20004_012",
                   female = "B20004_018")
 
-edu_emp_lang_less_hs <- ("B16010_002")
-edu_emp_lang_less_hs_work <- ("B16010_003")
-edu_emp_lang_less_hs_work_eng <- ("B16010_004")
-edu_emp_lang_less_hs_work_spanish <- ("B16010_005")
-edu_emp_lang_less_hs_work_indoEurop <- ("B16010_006")
-edu_emp_lang_less_hs_work_asian <- ("B16010_007")
-edu_emp_lang_less_hs_work_other <- ("B16010_008")
-edu_emp_lang_less_hs_NOTwork <- ("B16010_009")
-edu_emp_lang_less_hs_NOTwork_eng <- ("B16010_010")
-edu_emp_lang_less_hs_NOTwork_spanish <- ("B16010_011")
-edu_emp_lang_less_hs_NOTwork_indoEurop <- ("B16010_012")
-edu_emp_lang_less_hs_NOTwork_asian <- ("B16010_013")
-edu_emp_lang_less_hs_NOTwork_other <- ("B16010_014")
-
 ## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
-# combining languages 
+# combining languages for those with less than high school diploma
 employed_lessHS <- c(lessHS_eng = "B16010_004", 
                      lessHS_spanish = "B16010_005", 
                      lessHS_indoEurop = "B16010_006", 
@@ -372,7 +360,6 @@ edu_emp_lang_comb_ds <- get_acs(
   geometry = FALSE
 )
 
-
 # making rowwise summaries for the edu/emp/lang dataset
 edu_emp_lang_comb_summary <- edu_emp_lang_comb_ds %>%
   rowwise() %>%
@@ -400,6 +387,7 @@ edu_emp_lang_comb_summary <- edu_emp_lang_comb_ds %>%
   arrange(NAME) %>%
   ungroup()
 
+# combining languages for facet plots
 employed_HS <- c(HS_eng = edu_emp_lang_grad_work_eng, 
                  HS_spanish = edu_emp_lang_grad_work_spanish, 
                  HS_indoEurop = edu_emp_lang_grad_work_indoEurop, 
@@ -424,7 +412,6 @@ voting_age_perc <- voting_age_ds %>%
 ## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)
 ## BY SEX BY EDUCATIONAL ATTAINMENT
 ## interactive leaflet plot
-
 # Male High School Earn
 m_hs_county <- get_acs(geography = "county", 
                variables = c(median_earn_male_hs = "B20004_009"), 
@@ -484,7 +471,7 @@ binsT <- c(15000, 20000, 25000, 30000, 35000, 40000, 45000)
 # need more for tracts
 
 palaC <- colorBin("viridis", f_hs_county$estimate, bins = binsC)
-palaT <- colorBin("viridis", f_hs_county$estimate, bins = binsT)
+palaT <- colorBin("magma", f_hs_county$estimate, bins = binsT)
 
 leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
@@ -521,7 +508,7 @@ kent_tracts <- kent_tracts %>%
 kent_tracts %>% 
   ggplot(aes(fill = pct)) +
   geom_sf(color = NA) +
-  facet_wrap(~variable) +
+  facet_wrap(~variable, ncol = 5, nrow = 1) +
   scale_fill_viridis_c()
 
 # unemployed, less than hs
@@ -538,7 +525,7 @@ kent_tracts <- kent_tracts %>%
 kent_tracts %>% 
   ggplot(aes(fill = pct)) +
   geom_sf(color = NA) +
-  facet_wrap(~variable) +
+  facet_wrap(~variable, ncol = 5, nrow = 1) +
   scale_fill_viridis_c()
 
 # employed, hs or higher
@@ -556,7 +543,7 @@ kent_tracts_HS <- kent_tracts_HS %>%
 kent_tracts_HS %>% 
   ggplot(aes(fill = pct)) +
   geom_sf(color = NA) +
-  facet_wrap(~variable) +
+  facet_wrap(~variable, ncol = 3, nrow = 5) +
   scale_fill_viridis_c()
 
 # employed, hs or higher
