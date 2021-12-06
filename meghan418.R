@@ -265,14 +265,16 @@ edu_emp_lang_bach_deg_ds <- get_acs(
 
 ## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
 voting_age_ds <- get_acs(
-  geography = "county",
+  geography = "state",
   state =  "MI",
-  variables = c(voting_age_total, voting_age_hs, voting_age_hs_grad, 
+  #county = "Kent",
+  variables = c(voting_age_hs, voting_age_hs_grad, 
                 voting_age_college, voting_age_assoc, voting_age_bach,
                 voting_age_grad),
   survey = "acs5",
   year = 2019,
-  output = "wide",
+  #output = "wide",
+  summary_var=voting_age_total,
   geometry = FALSE
 )
 
@@ -346,19 +348,19 @@ edu_emp_lang_comb_ds <- get_acs(
 edu_emp_lang_comb_summary <- edu_emp_lang_comb_ds %>%
   rowwise() %>%
   mutate(
-    edu_emp_lang_grad <- sum(B16010_015E, B16010_028E, B16010_041E), 
-    edu_emp_lang_grad_work <- sum(B16010_016E, B16010_029E, B16010_042E),
-    edu_emp_lang_grad_work_eng <- sum(B16010_017E, B16010_030E, B16010_043E),
-    edu_emp_lang_grad_work_spanish <- sum(B16010_018E, B16010_031E, B16010_044E),
-    edu_emp_lang_grad_work_indoEurop <- sum(B16010_019E, B16010_031E, B16010_045E),
-    edu_emp_lang_grad_work_asian <- sum(B16010_020E, B16010_033E, B16010_046E),
-    edu_emp_lang_grad_work_other <- sum(B16010_021E, B16010_034E, B16010_047E),
-    edu_emp_lang_grad_NOTwork <- sum(B16010_022E, B16010_035E, B16010_048E),
-    edu_emp_lang_grad_NOTwork_eng <- sum(B16010_023E, B16010_036E, B16010_049E),
-    edu_emp_lang_grad_NOTwork_spanish <- sum(B16010_024E, B16010_037E, B16010_050E),
-    edu_emp_lang_grad_NOTwork_indoEurop <- sum(B16010_025E, B16010_038E, B16010_051E),
-    edu_emp_lang_grad_NOTwork_asian <- sum(B16010_026E, B16010_039E, B16010_052E),
-    edu_emp_lang_grad_NOTwork_other <- sum(B16010_027E, B16010_040E, B16010_053E)
+    edu_emp_lang_grad = sum(B16010_015E, B16010_028E, B16010_041E), 
+    edu_emp_lang_grad_work = sum(B16010_016E, B16010_029E, B16010_042E),
+    edu_emp_lang_grad_work_eng = sum(B16010_017E, B16010_030E, B16010_043E),
+    edu_emp_lang_grad_work_spanish = sum(B16010_018E, B16010_031E, B16010_044E),
+    edu_emp_lang_grad_work_indoEurop = sum(B16010_019E, B16010_031E, B16010_045E),
+    edu_emp_lang_grad_work_asian = sum(B16010_020E, B16010_033E, B16010_046E),
+    edu_emp_lang_grad_work_other = sum(B16010_021E, B16010_034E, B16010_047E),
+    edu_emp_lang_grad_NOTwork = sum(B16010_022E, B16010_035E, B16010_048E),
+    edu_emp_lang_grad_NOTwork_eng = sum(B16010_023E, B16010_036E, B16010_049E),
+    edu_emp_lang_grad_NOTwork_spanish = sum(B16010_024E, B16010_037E, B16010_050E),
+    edu_emp_lang_grad_NOTwork_indoEurop = sum(B16010_025E, B16010_038E, B16010_051E),
+    edu_emp_lang_grad_NOTwork_asian = sum(B16010_026E, B16010_039E, B16010_052E),
+    edu_emp_lang_grad_NOTwork_other = sum(B16010_027E, B16010_040E, B16010_053E)
   ) %>%
   select(NAME, edu_emp_lang_grad, edu_emp_lang_grad_work, edu_emp_lang_grad_work_eng, 
          edu_emp_lang_grad_work_spanish, edu_emp_lang_grad_work_indoEurop, 
@@ -437,28 +439,33 @@ kent_tracts %>%
 
 ## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
 ## Do pie chart (with percents)
-# barplot first 
-bp<- ggplot(voting_age_ds, aes(x="", y=variable))+
-  geom_bar(width = 1)
-bp
-# then use to make pie chart
-pie <- bp + coord_polar("y", start=0)
-pie
+# position of the labels
+voting_age_label <- voting_age_perc %>% 
+  arrange(desc(variable)) %>%
+  mutate(prop = percent / sum(voting_age_perc$percent) *100) %>%
+  mutate(ypos = cumsum(percent)- 0.5*percent)
+# pie chart
+ggplot(voting_age_perc, aes(x="", y=variable, fill=percent)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  theme_void() + # remove background, grid, numeric labels
+  theme(legend.position="none") + #remove legend
+  geom_text(aes(label = percent), color = "white", size=6) #add labels
+
 
 # classic bar chart
-voting_age_ds %>%
-  ggplot( aes(x=variable, y=estimate)) +
+voting_age_perc %>%
+  ggplot( aes(x=variable, y=percent)) +
   geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
   coord_flip() +
   xlab("") +
   theme_bw()+
-  scale_x_discrete(labels = c('Total Voting Age Population', 'High School, 
-                              No Diploma','High School Graduate', 'Some College', 
+  scale_x_discrete(labels = c('High School, No Diploma','High School Graduate', 
+                              'Some College, No Degree', 'Associates Degree', 
                               'Bachelors Degree', 'Graduate Degree or Higher'))+
   labs(title = "Percent of MI Voting-Age Population by Educational Attainment", 
        subtitle = "2019 5-year ACS estimates", 
        y = "Percent", 
        x = "Education Level", 
        caption = "Source: ACS Data Table B29002 via the tidycensus R package") 
-
 
