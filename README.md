@@ -56,4 +56,8 @@ https://walker-data.com/tidycensus/articles/spatial-data.html (facet)
 
 Other graphs:
 
-http://www.sthda.com/english/wiki/ggplot2-pie-chart-quick-start-guide-r-software-and-data-visualization (pie chart)
+https://www.r-graph-gallery.com/piechart-ggplot2.html (pie chart)
+
+ggplot(voting_age_perc, aes(x="", y=variable, fill=percent)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0)

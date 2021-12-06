@@ -1,0 +1,35 @@
+name: "Final_project"
+title: "STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash & Alex Gichuki"
+description: |
+ Using Census Data to Analyze Educational Attainment
+output_dir: "_site"
+navbar:
+  right:
+    - text: "About"
+      href: index.html
+    - text: "Variables"
+      menu:
+          - text: "Gender & Age by Education"
+            href: genderage.html
+          - text: "Employment Status"
+            href: employment.html
+          - text: "Prison Populations"
+            href: prison.html
+          - text: "Poverty Status by Household Type"
+            href: povertyhouse.html
+          - text: "Poverty Status by Gender"
+            href: povertygen.html
+          - text: "Lanaguage Spoken at Home"
+            href: language.html
+          - text: "Median Earnings"
+            href: median.html
+    - text: "Code"
+      menu:
+          - text: "Abby's Code"
+            href: acode.html
+          - text: "Alex's Code"
+            href: axcode.html
+          - text: "Meghan's Code"
+            href: mcode.html
+output: distill::distill_article
+

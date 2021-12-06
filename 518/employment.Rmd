@@ -1,0 +1,17 @@
+---
+title: "Employment Status"
+description: |
+  testestetes
+output_dir: "docs"
+site: distill::distill_website
+search: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating websites with Distill at:
+# https://rstudio.github.io/distill/website.html
+
+```
+

@@ -1,0 +1,227 @@
+---
+title: "Adult Prison Populations"
+description: |
+  GROUP QUARTERS TYPE (3 TYPES) BY EDUCATIONAL ATTAINMENT <br /> Table: B26106 - Variables used: 16-20
+output_dir: "docs"
+site: distill::distill_website
+search: TRUE
+---
+```{r, Libraries, echo=FALSE}
+library(tidyverse)
+library(tidycensus)
+library(ggridges)
+library(dplyr)
+library(tigris)
+options(tigris_use_cache = TRUE)
+library(leaflet)
+library(sf)
+library(packcircles)
+library(ggplot2)
+library(viridis)
+library(ggiraph)
+library(ggbeeswarm)
+```
+
+```{r, group_quarters3_define_variables_B26201, echo=FALSE}
+adult_prison_total <- ("B26106_016")
+No_HS = "B26106_017"
+HS_Only = "B26106_018"
+Some_College = "B26106_019"
+Bachelor_above = "B26106_020"
+```
+
+From the ACS 2019 5-year survey, we isolated adult prison populations by educational attainment. Unfortunately, due to the geographic data available, we were not able to investigate by county, but instead grouped by states and looked at percentage totals for Michigan as a whole. <br /> 
+ <br /> 
+
+Below you will find geographic visualizations of the U.S. that provide information by state of educational attainment levels for adult prison populations: <br /> <br /> 
+-Percentage **without** High School Dipolmas <br /> 
+-Percentage with **only** High School Dipolmas <br /> 
+-Percentage with some college <br /> 
+-Percentage with a Bachelor's degree or higher <br /> 
+
+```{r, echo=FALSE}
+mi_prison2 <- get_acs(
+  geography = "state",
+  #state = "MI",
+  variables = c("B26106_018"),
+  geometry = TRUE,
+  summary_var = "B26106_016"
+) 
+
+mi_prison2 <- mi_prison2 %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+
+library(ggiraph)
+
+df <- mi_prison2 %>%
+  shift_geometry(position = "outside") %>%
+  mutate(tooltip = paste(NAME, ceiling(percent), sep = ": "))
+
+gg <- ggplot(df, aes(fill = percent)) + 
+  geom_sf_interactive(aes(tooltip = tooltip, data_id = NAME), 
+                      size = 0.1) + 
+  scale_fill_viridis_c(option = "plasma") + 
+  labs(title = "Percent of Adult Prison Population with Only High School Diploma",
+       caption = "Data source: 2019 5-year ACS, US Census Bureau",
+       fill = "ACS estimate") + 
+  theme_void() 
+  
+girafe(ggobj = gg) %>%
+  girafe_options(opts_hover(css = "fill:red;"), 
+                 opts_zoom(max = 10))
+```
+
+```{r, echo=FALSE}
+mi_prison3 <- get_acs(
+  geography = "state",
+  #state = "MI",
+  variables = c("B26106_017"),
+  geometry = TRUE,
+  summary_var = "B26106_016"
+) 
+
+mi_prison3 <- mi_prison3 %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+df <- mi_prison3 %>%
+  shift_geometry(position = "outside") %>%
+  mutate(tooltip = paste(NAME, ceiling(percent), sep = ": "))
+
+gg <- ggplot(df, aes(fill = percent)) + 
+  geom_sf_interactive(aes(tooltip = tooltip, data_id = NAME), 
+                      size = 0.1) + 
+  scale_fill_viridis_c(option = "plasma") + 
+  labs(title = "Percent of Adult Prison Population with No High School Diploma",
+       caption = "Data source: 2019 5-year ACS, US Census Bureau",
+       fill = "ACS estimate") + 
+  theme_void() 
+  
+girafe(ggobj = gg) %>%
+  girafe_options(opts_hover(css = "fill:red;"), 
+                 opts_zoom(max = 10))
+```
+
+
+```{r, echo=FALSE}
+mi_prison4 <- get_acs(
+  geography = "state",
+  #state = "MI",
+  variables = c("B26106_019"),
+  geometry = TRUE,
+  summary_var = "B26106_016"
+) 
+
+mi_prison4 <- mi_prison4 %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+df <- mi_prison4 %>%
+  shift_geometry(position = "outside") %>%
+  mutate(tooltip = paste(NAME, ceiling(percent), sep = ": "))
+
+gg <- ggplot(df, aes(fill = percent)) + 
+  geom_sf_interactive(aes(tooltip = tooltip, data_id = NAME), 
+                      size = 0.1) + 
+  scale_fill_viridis_c(option = "plasma") + 
+  labs(title = "Percent of Adult Prison Population with Some College",
+       caption = "Data source: 2019 5-year ACS, US Census Bureau",
+       fill = "ACS estimate") + 
+  theme_void() 
+  
+girafe(ggobj = gg) %>%
+  girafe_options(opts_hover(css = "fill:red;"), 
+                 opts_zoom(max = 10))
+```
+
+
+```{r, echo=FALSE}
+mi_prison5 <- get_acs(
+  geography = "state",
+  #state = "MI",
+  variables = c("B26106_020"),
+  geometry = TRUE,
+  summary_var = "B26106_016"
+) 
+
+mi_prison5 <- mi_prison5 %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+
+df <- mi_prison5 %>%
+  shift_geometry(position = "outside") %>%
+  mutate(tooltip = paste(NAME, ceiling(percent), sep = ": "))
+
+gg <- ggplot(df, aes(fill = percent)) + 
+  geom_sf_interactive(aes(tooltip = tooltip, data_id = NAME), 
+                      size = 0.1) + 
+  scale_fill_viridis_c(option = "plasma") + 
+  labs(title = "Percent of Adult Prison Population with Bachelor's Degree or Above",
+       caption = "Data source: 2019 5-year ACS, US Census Bureau",
+       fill = "ACS estimate") + 
+  theme_void() 
+  
+girafe(ggobj = gg) %>%
+  girafe_options(opts_hover(css = "fill:red;"), 
+                 opts_zoom(max = 10))
+```
+
+**Michigan Specific** <br /> 
+The bar chart below shows us the prison population by educational level for just Michigan.<br /> <br /> 
+
+
+```{r prison_pop, echo=FALSE }
+
+mi_prison <- get_acs(
+  geography = "state",
+  state = "MI",
+  variables = c(No_HS = "B26106_017",
+                HS_Only = "B26106_018",
+                Some_College = "B26106_019",
+                Bachelor_above = "B26106_020"),
+  summary_var = "B26106_016"
+) 
+
+
+mi_prison <- mi_prison %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+mi_prison %>%
+  ggplot( aes(x=variable, y=ceiling(percent))) +
+  geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+  coord_flip() +
+  xlab("") +
+  theme_bw()+
+  geom_label(aes(label = ceiling(percent)))+
+  labs(title = "Percent of MI Prison Population by Educational Attainment", 
+     subtitle = "2019 5-year ACS estimates", 
+     y = "Percent", 
+     x = "Education Level", 
+     caption = "Source: ACS Data Table B26106 via the tidycensus R package") 
+
+
+```
+
+We have also provided a pie chart with the same information.<br /> <br /> 
+Almost half the adult prison population in Michigan have only a high school diploma (or equivalent). Followed by 28% of adults with some college (either completed associated degree or did not complete any degree). And the third highest population with 21% of the adult prison population not completing high school.<br /> <br /> 
+An important callout is the very small percentage (3%) of adults in MI prisons with a bachelor's degree or higher. Often people convicted of crimes are from more impoverished communities. This could be due to a number of factors, but most often a lack of financial resources to address basic needs. Higher education typically requires access to wealth.
+
+```{r echo=FALSE}
+mi_prison %>%
+  ggplot(
+  aes(x= "", y = percent, fill=variable)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  theme_void()+
+  scale_fill_brewer()+
+  geom_label(aes(label = ceiling(percent)),
+            position = position_stack(vjust = 0.5),
+            show.legend = FALSE) +
+  labs(title = "Percent of MI Adult Prison Population by Educational Attainment", 
+     subtitle = "2019 5-year ACS estimates")
+```
+

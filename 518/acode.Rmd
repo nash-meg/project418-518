@@ -1,0 +1,220 @@
+---
+title: "Code contributions to this project from Abby Simons-Scalise"
+description: |
+  Using Census Data to Analyze Educational Attainment
+output_dir: "docs"
+site: distill::distill_website
+search: TRUE
+---
+```{r, libraries, echo = TRUE, results = 'hide'}
+#loading libraries
+library(tidyverse)
+library(tidycensus)
+library(ggridges)
+library(dplyr)
+library(tigris)
+options(tigris_use_cache = TRUE)
+library(leaflet)
+library(sf)
+library(packcircles)
+library(ggplot2)
+library(viridis)
+library(ggiraph)
+library(ggbeeswarm)
+library(ggiraph)
+```
+###############################################
+```{r, load_variables, echo = TRUE, results = 'hide'}
+#installing and saving census api key 
+#census_api_key("67cbcd7b6d617916475eb5bd88439380a2511582", install = TRUE)
+
+#loading all variables (18,000+) to search and understand education variables available
+all_vars_acs5 <- 
+  load_variables(year = 2019, dataset = "acs5")
+```
+###############################################
+```{r, group_quarters3, echo = TRUE, results = 'hide'}
+#defining variables related direction to adult correctional facilities
+adult_prison_total = "B26106_016"
+No_HS = "B26106_017"
+HS_Only = "B26106_018"
+Some_College = "B26106_019"
+Bachelor_above = "B26106_020"
+```
+###############################################
+```{r, hs_only, echo = TRUE, results = 'hide'}
+#calling to API to obtain only HS degrees by state & total for each state
+mi_prison2 <- get_acs(
+  geography = "state",
+  variables = c("B26106_018"),
+  geometry = TRUE,
+  summary_var = "B26106_016"
+) 
+#mutating dataset to show percentages instead of count
+mi_prison2 <- mi_prison2 %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+#setting up and creating interactive maps of the U.S.
+df <- mi_prison2 %>%
+  shift_geometry(position = "outside") %>%
+  mutate(tooltip = paste(NAME, ceiling(percent), sep = ": "))
+
+gg <- ggplot(df, aes(fill = percent)) + 
+  geom_sf_interactive(aes(tooltip = tooltip, data_id = NAME), 
+                      size = 0.1) + 
+  scale_fill_viridis_c(option = "plasma") + 
+  labs(title = "Percent of Adult Prison Population with Only High School Diploma",
+       caption = "Data source: 2019 5-year ACS, US Census Bureau",
+       fill = "ACS estimate") + 
+  theme_void() 
+  
+girafe(ggobj = gg) %>%
+  girafe_options(opts_hover(css = "fill:red;"), 
+                 opts_zoom(max = 10))
+```
+###############################################
+```{r, no_hs, echo = TRUE, results = 'hide'}
+#same code as above, just changing variable used
+mi_prison3 <- get_acs(
+  geography = "state",
+  #state = "MI",
+  variables = c("B26106_017"),
+  geometry = TRUE,
+  summary_var = "B26106_016"
+) 
+
+mi_prison3 <- mi_prison3 %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+df <- mi_prison3 %>%
+  shift_geometry(position = "outside") %>%
+  mutate(tooltip = paste(NAME, ceiling(percent), sep = ": "))
+
+gg <- ggplot(df, aes(fill = percent)) + 
+  geom_sf_interactive(aes(tooltip = tooltip, data_id = NAME), 
+                      size = 0.1) + 
+  scale_fill_viridis_c(option = "plasma") + 
+  labs(title = "Percent of Adult Prison Population with No High School Diploma",
+       caption = "Data source: 2019 5-year ACS, US Census Bureau",
+       fill = "ACS estimate") + 
+  theme_void() 
+  
+girafe(ggobj = gg) %>%
+  girafe_options(opts_hover(css = "fill:red;"), 
+                 opts_zoom(max = 10))
+```
+###############################################
+```{r, some college,echo = TRUE, results = 'hide'}
+#same code as above, just changing variable used
+mi_prison4 <- get_acs(
+  geography = "state",
+  #state = "MI",
+  variables = c("B26106_019"),
+  geometry = TRUE,
+  summary_var = "B26106_016"
+) 
+
+mi_prison4 <- mi_prison4 %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+df <- mi_prison4 %>%
+  shift_geometry(position = "outside") %>%
+  mutate(tooltip = paste(NAME, ceiling(percent), sep = ": "))
+
+gg <- ggplot(df, aes(fill = percent)) + 
+  geom_sf_interactive(aes(tooltip = tooltip, data_id = NAME), 
+                      size = 0.1) + 
+  scale_fill_viridis_c(option = "plasma") + 
+  labs(title = "Percent of Adult Prison Population with Some College",
+       caption = "Data source: 2019 5-year ACS, US Census Bureau",
+       fill = "ACS estimate") + 
+  theme_void() 
+  
+girafe(ggobj = gg) %>%
+  girafe_options(opts_hover(css = "fill:red;"), 
+                 opts_zoom(max = 10))
+```
+###############################################
+```{r,college, echo = TRUE, results = 'hide'}
+#same code as above, just changing variable used
+mi_prison5 <- get_acs(
+  geography = "state",
+  #state = "MI",
+  variables = c("B26106_020"),
+  geometry = TRUE,
+  summary_var = "B26106_016"
+) 
+
+mi_prison5 <- mi_prison5 %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+
+df <- mi_prison5 %>%
+  shift_geometry(position = "outside") %>%
+  mutate(tooltip = paste(NAME, ceiling(percent), sep = ": "))
+
+gg <- ggplot(df, aes(fill = percent)) + 
+  geom_sf_interactive(aes(tooltip = tooltip, data_id = NAME), 
+                      size = 0.1) + 
+  scale_fill_viridis_c(option = "plasma") + 
+  labs(title = "Percent of Adult Prison Population with Bachelor's Degree or Above",
+       caption = "Data source: 2019 5-year ACS, US Census Bureau",
+       fill = "ACS estimate") + 
+  theme_void() 
+  
+girafe(ggobj = gg) %>%
+  girafe_options(opts_hover(css = "fill:red;"), 
+                 opts_zoom(max = 10))
+```
+###############################################
+```{r prison_pop_MI, echo = TRUE, results = 'hide'}
+#calling to API to obtain only HS degrees by state & total for each state
+mi_prison <- get_acs(
+  geography = "state",
+  state = "MI",
+  variables = c(No_HS = "B26106_017",
+                HS_Only = "B26106_018",
+                Some_College = "B26106_019",
+                Bachelor_above = "B26106_020"),
+  summary_var = "B26106_016"
+) 
+#mutating for percentages
+mi_prison <- mi_prison %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+#bar chart to show educational levels by percent for MI
+mi_prison %>%
+  ggplot( aes(x=variable, y=ceiling(percent))) +
+  geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+  coord_flip() +
+  xlab("") +
+  theme_bw()+
+  geom_label(aes(label = ceiling(percent)))+
+  labs(title = "Percent of MI Prison Population by Educational Attainment", 
+     subtitle = "2019 5-year ACS estimates", 
+     y = "Percent", 
+     x = "Education Level", 
+     caption = "Source: ACS Data Table B26106 via the tidycensus R package") 
+
+
+```
+###############################################
+```{r prison_pie_MI, echo = TRUE, results = 'hide'}
+#pie chart of same table from bar chart
+mi_prison %>%
+  ggplot(
+  aes(x= "", y = percent, fill=variable)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  theme_void()+
+  scale_fill_brewer()+
+  geom_label(aes(label = ceiling(percent)),
+            position = position_stack(vjust = 0.5),
+            show.legend = FALSE) +
+  labs(title = "Percent of MI Adult Prison Population by Educational Attainment", 
+     subtitle = "2019 5-year ACS estimates")
+```
+
