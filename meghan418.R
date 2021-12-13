@@ -68,7 +68,6 @@ edu_emp_lang_less_hs_NOTwork_spanish <- ("B16010_011")
 edu_emp_lang_less_hs_NOTwork_indoEurop <- ("B16010_012")
 edu_emp_lang_less_hs_NOTwork_asian <- ("B16010_013")
 edu_emp_lang_less_hs_NOTwork_other <- ("B16010_014")
-
 # high school graduate
 edu_emp_lang_hs <- ("B16010_015")
 edu_emp_lang_hs_work <- ("B16010_016")
@@ -83,7 +82,6 @@ edu_emp_lang_hs_NOTwork_spanish <- ("B16010_024")
 edu_emp_lang_hs_NOTwork_indoEurop <- ("B16010_025")
 edu_emp_lang_hs_NOTwork_asian <- ("B16010_026")
 edu_emp_lang_hs_NOTwork_other <- ("B16010_027")
-
 # some college
 edu_emp_lang_college <- ("B16010_028")
 edu_emp_lang_college_work <- ("B16010_029")
@@ -98,7 +96,6 @@ edu_emp_lang_college_NOTwork_spanish <- ("B16010_037")
 edu_emp_lang_college_NOTwork_indoEurop <- ("B16010_038")
 edu_emp_lang_college_NOTwork_asian <- ("B16010_039")
 edu_emp_lang_college_NOTwork_other <- ("B16010_040")
-
 # bachelors degree or higher
 edu_emp_lang_bach_deg <- ("B16010_041")
 edu_emp_lang_bach_deg_work <- ("B16010_042")
@@ -336,9 +333,8 @@ UNemployed_lessHS <- c(lessHS_eng = "B16010_010",
                        lessHS_asian = "B16010_013",
                        lessHS_other = "B16010_014")
 
-################### New Dataset with Combined Vars ############################
-
-## Making the new education, employment, and language dataset
+## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
+## Making new dataset with combined variables
 edu_emp_lang_comb_ds <- get_acs(
   geography = "county",
   state =  "MI",
@@ -360,7 +356,8 @@ edu_emp_lang_comb_ds <- get_acs(
   geometry = FALSE
 )
 
-# making rowwise summaries for the edu/emp/lang dataset
+## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
+# making row-wise summaries for the combined dataset
 edu_emp_lang_comb_summary <- edu_emp_lang_comb_ds %>%
   rowwise() %>%
   mutate(
@@ -387,6 +384,7 @@ edu_emp_lang_comb_summary <- edu_emp_lang_comb_ds %>%
   arrange(NAME) %>%
   ungroup()
 
+## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
 # combining languages for facet plots
 employed_HS <- c(HS_eng = edu_emp_lang_grad_work_eng, 
                  HS_spanish = edu_emp_lang_grad_work_spanish, 
@@ -399,12 +397,6 @@ UNemployed_HS <- c(HS_eng = edu_emp_lang_grad_NOTwork_eng,
                    HS_indoEurop = edu_emp_lang_grad_work_indoEurop, 
                    HS_asian = edu_emp_lang_grad_work_asian,
                    HS_other = edu_emp_lang_grad_work_other)
-
-################### Getting Percents for Pie Chart ############################
-
-voting_age_perc <- voting_age_ds %>%
-  mutate(percent = 100 * (estimate / summary_est)) %>%
-  select(NAME, variable, percent)
 
 
 ################### Graphs #############################################
@@ -425,29 +417,29 @@ m_hs_tract <- get_acs(geography = "tract",
                geometry = TRUE) %>%
   st_transform(4326)
 
-bins <- c(10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 
-          50000, 55000, 60000, 65000, 70000, 75000, 80000, 85000, 
-          90000, 95000, 100000)
-################################################# ERROR need to figure out bins
-#can do 10000-55000 for county
-#need up to 100000 for tract
+binsC <- c(10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000)
+binsT <- c(0, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 
+          90000, 100000, 200000)
 
-pala <- colorBin("viridis", m_hs_county$estimate, bins = bins)
+palaC <- colorBin("viridis", m_hs_county$estimate, bins = binsC)
+palaT <- colorBin("magma", m_hs_county$estimate, bins = binsT)
 
 leaflet() %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   addPolygons(data = m_hs_county, stroke = FALSE, smoothFactor = 0.2, 
-              color = ~pala(estimate), 
+              color = ~palaC(estimate), 
               label = ~as.character(estimate), 
               fillOpacity = 0.8, 
               group = "Counties") %>%
   addPolygons(data = m_hs_tract, stroke = FALSE, smoothFactor = 0.2, 
-              color = ~pala(estimate), 
+              color = ~palaT(estimate), 
               label = ~as.character(estimate), 
               fillOpacity = 0.8, 
               group = "Tracts") %>%
-  addLegend(pal = pala, values = m_hs_county$estimate, 
-            title = "Male Earnings with HS Diploma") %>%
+  addLegend(pal = palaC, values = m_hs_county$estimate, 
+            title = "Male Earnings with HS Diploma By County") %>%
+  addLegend(pal = palaT, values = m_hs_tract$estimate, 
+            title = "Male Earnings with HS Diploma By Census Tract") %>%
   addLayersControl(overlayGroups = c("Tracts", "Counties")) %>%
   hideGroup("Tracts")
 
@@ -465,10 +457,7 @@ f_hs_tract <- get_acs(geography = "tract",
   st_transform(4326)
 
 binsC <- c(15000, 20000, 25000, 30000)
-binsT <- c(15000, 20000, 25000, 30000, 35000, 40000, 45000)
-################################################# ERROR need to figure out bins
-# county - only need 15000 - 30000
-# need more for tracts
+binsT <- c(10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000)
 
 palaC <- colorBin("viridis", f_hs_county$estimate, bins = binsC)
 palaT <- colorBin("magma", f_hs_county$estimate, bins = binsT)
@@ -486,11 +475,46 @@ leaflet() %>%
               fillOpacity = 0.8, 
               group = "Tracts") %>%
   addLegend(pal = palaC, values = f_hs_county$estimate, 
-            title = "Female Earnings with HS Diploma") %>%
+            title = "Female Earnings with HS Diploma By County") %>%
   addLegend(pal = palaT, values = f_hs_tract$estimate, 
-            title = "Female Earnings with HS Diploma") %>%
+            title = "Female Earnings with HS Diploma By Census Tract") %>%
   addLayersControl(overlayGroups = c("Tracts", "Counties")) %>%
   hideGroup("Tracts")
+
+# Less than HS Earn
+m_less_county <- get_acs(geography = "county", 
+                       variables = c(median_earn_male_less = "B20004_008"), 
+                       state = "MI", 
+                       geometry = TRUE) %>%
+  st_transform(4326)
+
+f_less_county <- get_acs(geography = "county", 
+                         variables = c(median_earn_female_less = "B20004_014"), 
+                         state = "MI", 
+                         geometry = TRUE) %>%
+  st_transform(4326)
+
+bins <- c(0, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000)
+
+pala <- colorBin("plasma", m_less_county$estimate, bins = bins)
+
+leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(data = m_less_county, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~pala(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Male Counties") %>%
+  addPolygons(data = f_less_county, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~pala(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Female Counties") %>%
+  addLegend(pal = pala, values = m_less_county$estimate, 
+            title = "Earnings without HS Diploma By County") %>%
+  addLayersControl(overlayGroups = c("Female Counties", "Male Counties")) %>%
+  hideGroup("Female Counties")
+
 
 ## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME
 ## facet plots
@@ -508,7 +532,14 @@ kent_tracts <- kent_tracts %>%
 kent_tracts %>% 
   ggplot(aes(fill = pct)) +
   geom_sf(color = NA) +
-  facet_wrap(~variable, ncol = 5, nrow = 1) +
+  labs(title = 'Percent Employed Without HS Diploma by Language Spoken at Home',
+       subtitle = "2019 5-year ACS estimates for Kent County",
+       caption='Source: ACS Data Table B29002 via the tidycensus R package',
+       x = NULL,
+       y = NULL)+
+  theme(axis.text = element_blank(),  # no lat/long values
+        axis.ticks = element_blank()) + # no lat/long ticks
+  facet_wrap(~variable, ncol = 3, nrow = 2) +
   scale_fill_viridis_c()
 
 # unemployed, less than hs
@@ -525,11 +556,17 @@ kent_tracts <- kent_tracts %>%
 kent_tracts %>% 
   ggplot(aes(fill = pct)) +
   geom_sf(color = NA) +
-  facet_wrap(~variable, ncol = 5, nrow = 1) +
+  labs(title = 'Percent Unemployed Without HS Diploma by Language Spoken at Home',
+       subtitle = "2019 5-year ACS estimates for Kent County",
+       caption='Source: ACS Data Table B29002 via the tidycensus R package',
+       x = NULL,
+       y = NULL)+
+  theme(axis.text = element_blank(),  # no lat/long values
+        axis.ticks = element_blank()) + # no lat/long ticks
+  facet_wrap(~variable, ncol = 3, nrow = 2) +
   scale_fill_viridis_c()
 
 # employed, hs or higher
-########################################### ERROR did not combine var correctly
 kent_tracts_HS <- get_acs(geography = "tract",
                        variables = employed_HS, 
                        state = "MI",
@@ -543,11 +580,17 @@ kent_tracts_HS <- kent_tracts_HS %>%
 kent_tracts_HS %>% 
   ggplot(aes(fill = pct)) +
   geom_sf(color = NA) +
-  facet_wrap(~variable, ncol = 3, nrow = 5) +
+  labs(title = 'Percent Employed With HS Diploma by Language Spoken at Home',
+       subtitle = "2019 5-year ACS estimates for Kent County",
+       caption='Source: ACS Data Table B29002 via the tidycensus R package',
+       x = NULL,
+       y = NULL)+
+  theme(axis.text = element_blank(),  # no lat/long values
+        axis.ticks = element_blank()) + # no lat/long ticks
+  facet_wrap(~variable, ncol = 6, nrow = 3) +
   scale_fill_viridis_c()
 
-# employed, hs or higher
-########################################## ERROR did not combine var correctly
+# UNemployed, hs or higher
 kent_tracts_HS <- get_acs(geography = "tract",
                        variables = UNemployed_HS, 
                        state = "MI",
@@ -561,26 +604,48 @@ kent_tracts_HS <- kent_tracts_HS %>%
 kent_tracts_HS %>% 
   ggplot(aes(fill = pct)) +
   geom_sf(color = NA) +
-  facet_wrap(~variable) +
+  labs(title = 'Percent Unemployed With HS Diploma by Language Spoken at Home',
+       subtitle = "2019 5-year ACS estimates for Kent County",
+       caption='Source: ACS Data Table B29002 via the tidycensus R package',
+       x = NULL,
+       y = NULL)+
+  theme(axis.text = element_blank(),  # no lat/long values
+        axis.ticks = element_blank()) + # no lat/long ticks
+  facet_wrap(~variable, ncol = 6, nrow = 4) +
   scale_fill_viridis_c()
 
 
 ## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT
-## Do pie chart (with percents)
-################################################ ERROR position of the labels
+## pie chart (with percents)
+# getting percents
+voting_age_perc <- voting_age_ds %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
 voting_age_label <- voting_age_perc %>% 
   arrange(desc(variable)) %>%
   mutate(prop = percent / sum(voting_age_perc$percent) *100) %>%
   mutate(ypos = cumsum(percent)- 0.5*percent)
-# pie chart
+################################################ ERROR position of the labels
+# actual pie chart
 ggplot(voting_age_perc, aes(x="", y=variable, fill=percent)) +
   geom_bar(stat="identity", width=1, color="white") +
   coord_polar("y", start=0) +
   theme_void() + # remove background, grid, numeric labels
-  theme(legend.position="none") + #remove legend
-  geom_text(aes(label = percent), color = "white", size=6) #add labels
+  theme(legend.position="none") + # remove legend
+  geom_text(aes(label = percent), color = "white", size=6) # add labels
 
+ggplot(voting_age_perc, aes(x="", y=variable, fill=percent)) +
+  geom_col(color = "black") +
+  geom_label(aes(label = percent), color = c(1, "white", "white"),
+             position = position_stack(vjust = 0.5),
+             show.legend = FALSE) +
+  guides(fill = guide_legend(title = "Percents")) +
+  scale_fill_viridis_d() +
+  coord_polar(theta = "y") + 
+  theme_void()
 
+## Backup if pie chart doesn't look good
 # classic bar chart
 voting_age_perc %>%
   ggplot( aes(x=variable, y=percent)) +
